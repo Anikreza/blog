@@ -5,7 +5,7 @@
         <div class="row gutter-vr-30px">
             <div class="col-md-6">
                 @foreach($articles as $article)
-                    <div>
+                    <div class="post post-full post-v2">
                         @include('component.card.topSectionCard',
                             [
                                 'image' => $article['image'],

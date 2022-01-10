@@ -20,7 +20,7 @@ class WebsiteController extends Controller
     public function index()
     {
 
-        $slidersArticles = $this->articleRepository->publishedFeaturedArticle(1, 4)->chunk(4)->values()->toArray();
+        $slidersArticles = $this->articleRepository->publishedFeaturedArticle(1, 4);
 
         return view('pages.home.index',
             compact(
