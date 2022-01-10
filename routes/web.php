@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,9 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('pages.home.index');
-});
+Route::get('/', [WebsiteController::class, 'index'])->name('home');
 
 Route::get('/articleDetail', function () {
     return view('pages.articleDetail.index');

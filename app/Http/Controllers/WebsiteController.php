@@ -3,17 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\Article\ArticleRepository;
 
-class Website extends Controller
+class WebsiteController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
+
+    private $articleRepository;
+    public function __construct(ArticleRepository $articleRepository){
+        $this->articleRepository = $articleRepository;
+    }
     public function index()
     {
-        //
+
+        $slidersArticles = $this->articleRepository->publishedFeaturedArticle(1, 4)->chunk(4)->values()->toArray();
+
+        return view('pages.home.index',
+            compact(
+                'slidersArticles',
+            )
+        );
     }
 
     /**

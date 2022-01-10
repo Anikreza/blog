@@ -21,7 +21,7 @@ class CreateArticlesTable extends Migration
             $table->longText('description');
             $table->text('excerpt')->nullable();
             $table->string('image')->nullable();
-            $table->string('image_disk')->nullable();
+            $table->string('image_disk')->default('local')->nullable();
             $table->string('meta_title')->nullable();
             $table->boolean('published')->default(1);
             $table->boolean('featured')->default(0);
