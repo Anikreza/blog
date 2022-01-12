@@ -17,10 +17,10 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            'process.env': [{
+            'process.env': {
                 MIX_APP_URL: JSON.stringify(process.env.APP_URL),
                 MIX_APP_NAME: JSON.stringify(process.env.APP_NAME),
-            }]
+            }
         }),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     ],

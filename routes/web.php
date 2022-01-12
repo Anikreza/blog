@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,11 +16,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ * PUBLIC ROUTES
+ */
+
 Route::get('/', [WebsiteController::class, 'index'])->name('home');
-
-//Route::get('/articleDetail', function () {
-//    return view('pages.articleDetail.index');
-//});
-
 Route::get('/{slug}', [WebsiteController::class, 'articleDetails'])->name('article-details');
+Route::get('kategorie/{slug}', [WebsiteController::class, 'categoryDetails'])->name('category');
+Route::get('/send-notification', [NotificationController::class, 'sendNotification'])->name('send.notification');
+
+/**
+ * ADMIN ROUTES
+ */
+Route::get('/dashboard/{any}', [ApplicationController::class, 'index'])->where('any', '(.*)');
 

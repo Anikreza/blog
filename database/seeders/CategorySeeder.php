@@ -22,7 +22,7 @@ class CategorySeeder extends Seeder
             'name' =>  Str::random(15),
             'slug' => Str::random(5),
             'excerpt' => 'travel',
-            'position'=>'none'
+            'position'=>1
         ]);
     }
 }
