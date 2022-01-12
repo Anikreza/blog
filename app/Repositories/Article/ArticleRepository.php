@@ -50,13 +50,68 @@ class ArticleRepository implements ArticleInterface
         });
     }
 
-    public function publishedFeaturedArticle(int $categoryId, int $limit)
+    public function publishedArticles(int $categoryId, int $limit)
     {
         return $this->baseQuery($categoryId)
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed')
-            ->where('featured', 0)
             ->with('favorites')
             ->latest()
+            ->limit($limit)
+            ->get();
+    }
+
+    public function publishedFeaturedArticles(int $categoryId, int $limit)
+    {
+        return $this->baseQuery($categoryId)
+            ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed')
+            ->where('featured', 1)
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+
+    public function mostReadArticles(int $categoryId, int $limit)
+    {
+        return $this->baseQuery($categoryId)
+            ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed')
+            ->limit($limit)
+            ->orderBy('viewed', 'desc')
+            ->get();
+    }
+
+    public function getArticle($condition, $isSlug = false)
+    {
+        return $this->model->with(['categories' => function ($q) use ($condition, $isSlug) {
+            $q->with(['articles' => function ($sq) use ($condition, $isSlug) {
+                $sq->select('article_id', 'title', 'slug', 'published', 'viewed', 'image', 'featured', 'description')
+                    ->with('favorites')
+                    ->where('published', '=', true)
+                    ->when($isSlug, function ($s) use ($condition, $isSlug) {
+                        $s->where('slug', '!=', $condition);
+                    })
+                    ->when(!$isSlug, function ($s) use ($condition, $isSlug) {
+                        $s->where('article_id', '!=', $condition);
+                    })
+                    ->inRandomOrder()
+                    ->limit(4);
+            }]);
+        }])
+            ->with(['keywords', 'favorites'])
+            ->where('published', true)
+            ->when($isSlug, function ($q) use ($condition) {
+                $q->where('slug', $condition);
+            })
+            ->when(!$isSlug, function ($q) use ($condition) {
+                $q->where('id', $condition);
+            })
+            ->first();
+    }
+
+    public function getSimilarArticles($categoryId, $limit)
+    {
+        return $this->baseQuery($categoryId)
+            ->select('id', 'title', 'slug', 'published', 'viewed', 'image', 'featured')
+            ->inRandomOrder()
             ->limit($limit)
             ->get();
     }

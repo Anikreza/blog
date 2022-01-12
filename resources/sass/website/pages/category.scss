@@ -1,0 +1,58 @@
+.category-page-wrapper {
+    .category-content {
+        padding: 0;
+    }
+
+    .section-title {
+        padding-bottom: 20px;
+    }
+
+    .item {
+        margin-bottom: 20px;
+
+        .article-card {
+            height: 180px;
+        }
+    }
+
+    .card-header-section {
+        padding: 20px;
+    }
+
+    .article-title {
+        font-size: 18px !important;
+        //line-height: 24px !important;
+    }
+}
+
+.sidebar-articles {
+    padding-left: 40px;
+
+    .section-title {
+        padding: 10px 0 !important;
+        margin-bottom: 20px;
+        border-bottom: 2px solid $borderColor;
+
+        span {
+            position: relative;
+            padding-bottom: 10px;
+            border-bottom: 2px solid $darkBlue;
+        }
+    }
+
+    .item {
+        padding: 0 0 20px 0;
+    }
+
+    .article-card {
+        height: 180px;
+    }
+
+    .article-title {
+        font-size: 18px !important;
+    }
+
+    .card-header-section {
+        padding: 20px;
+    }
+}

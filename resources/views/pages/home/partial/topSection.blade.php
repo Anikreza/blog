@@ -1,10 +1,11 @@
-<div class="section section-l bg-secondary section-news">
+<div class="section section-l bg-white section-news">
+    <br/>
     <div class="container">
         <div class="row justify-content-center">
         </div><!-- .row -->
         <div class="row gutter-vr-30px">
-            <div class="col-md-6">
-                @foreach($articles as $article)
+            @foreach($articles as $article)
+                <div class="col-md-6">
                     <div class="post post-full post-v2">
                         @include('component.card.topSectionCard',
                             [
@@ -14,8 +15,9 @@
                                 'category' => $category ?? $article['categories'][0]['name'],
                             ])
                     </div>
-                @endforeach
-            </div><!-- .col -->
+                </div><!-- .col -->
+            @endforeach
         </div><!-- .row -->
     </div><!-- .container -->
 </div>
+

@@ -1,0 +1,22 @@
+<!-- This is the file that will render any external pages you do not want inside the dash, like login form-->
+<template>
+  <v-app
+      id="login-home"
+      :dark="$store.state.app.isDark">
+
+    <v-main>
+      <transition mode="out-in">
+        <router-view/>
+      </transition>
+    </v-main>
+
+  </v-app>
+</template>
+
+<script>
+export default {}
+console.log('url',process.env.APP_URL)
+</script>
+
+<style>
+</style>

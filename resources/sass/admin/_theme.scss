@@ -1,0 +1,47 @@
+$primary: #3f51b5;
+$secondary: #424242;
+$tertiary: #82B1FF;
+$accent: #344664;
+$error: #FF5252;
+$info: #2196F3;
+$success: #4CAF50;
+$warning: #FFC107;
+$general: #185a9d;
+$white: #fff;
+
+$colors: $primary $secondary $tertiary $accent $error $info $success $warning $general $white;
+$color-attribute: 'primary' 'secondary' 'tertiary' 'accent' 'error' 'info' 'success' 'warning' 'general' 'white';
+
+@for $i from 1 through length($colors) {
+  .font-color-#{nth($color-attribute, $i)} {
+    color: nth($colors, $i) !important;
+  }
+
+  .bg-color-#{nth($color-attribute, $i)} {
+    background-color: nth($colors, $i) !important;
+    border-color: nth($colors, $i) !important;
+    color: #eee !important;
+
+    &.color-active {
+      border-color: #fff !important;
+    }
+  }
+
+  :export {
+    #{nth($color-attribute, $i)}: #{nth($colors, $i)};
+  }
+}
+
+.v-card, .v-btn {
+  //background: $general !important;
+  @for $i from 1 through length($colors) {
+    &.#{nth($color-attribute, $i)} {
+      background: nth($colors, $i) !important;
+
+      &:hover {
+        background: nth($colors, $i) !important;
+        opacity: 0.7;
+      }
+    }
+  }
+}

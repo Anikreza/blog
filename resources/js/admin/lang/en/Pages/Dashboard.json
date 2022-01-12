@@ -1,0 +1,19 @@
+{
+  "company_register_history": "Company Registration History",
+  "registration_increase": "Registration increased in last week",
+  "email_campaign": "Email Campaign",
+  "last_campaign_performance": "Last Campaign Performance",
+  "completed_task": "Completed Task",
+  "campaign_sent": "campaign sent {time} ago",
+  "latest_update": "Latest Update",
+  "revenue": "Revenue",
+  "last_()_hours": "last {time} hours",
+  "last_()_months": "last {time} months",
+  "last_()_years": "last {time} years",
+  "disk_usage": "Disk Usage",
+  "companies_joined": "{company} company joined in last {time}",
+  "with_supported_skill": "With {skill} supported skill set",
+  "average_screen_test_weekly": "{avg} average screen test weekly",
+  "screening_summary": "Screening Summary",
+  "last_screening": "Last Screening {time}"
+}

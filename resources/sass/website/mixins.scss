@@ -1,0 +1,64 @@
+@mixin border-color {
+    border-bottom: 1px solid rgba(196, 196, 196, 0.3);
+    --border-color: rgba(196, 196, 196, 0.3);
+    -webkit-background-clip: padding-box; /* for Safari */
+    background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+}
+
+@mixin nexa-bold-font {
+    font-family: $specialFontBold;
+    font-style: normal;
+    //font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+}
+
+@mixin nexa-regular-font {
+    font-family: $specialFontRegular;
+    font-style: normal;
+    //font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+}
+
+@mixin generate($prefix, $property) {
+    // List of sizes to generate for each
+    $maxsize: 40;
+    // Spacing to multiply the sizes by
+    $spacing: 1px;
+
+    // Loop through all of the sizes(we use @for rather than @each, as we want access to the index)
+    @for $i from 1 through $maxsize {
+        // Get the size for the current index
+        $size: $i;
+
+        // Create the rule
+        .#{$prefix}-#{$i - 1} {
+            #{$property}: $spacing * $size;
+        }
+    }
+}
+
+@mixin button-white {
+    background-color: #F3F5F7 !important;
+    border-color: #F3F5F7 !important;
+    color: #222222 !important;
+}
+
+@mixin zoom($scaleSize, $scaleReturn) {
+    -webkit-transform: scale($scaleSize);
+    -moz-transform: scale($scaleSize);
+    -o-transform: scale($scaleSize);
+    transform: scale($scaleSize);
+    -webkit-transform-origin: $scaleReturn;
+    -moz-transform-origin: $scaleReturn;
+    -o-transform-origin: $scaleReturn;
+    transform-origin: $scaleReturn;
+}
+
+@mixin descriptionBasic {
+    font-family: $regularFont;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 26px;
+}

@@ -1,0 +1,19 @@
+{
+  "company_register_history": "Firmenregistrierung Historie",
+  "registration_increase": "Die Registrierung hat in der letzten Woche zugenommen",
+  "email_campaign": "E-Mail-Kampagne",
+  "last_campaign_performance": "Letzte Kampagnenleistung",
+  "completed_task": "Aufgabe abgeschlossen",
+  "campaign_sent": "Kampagne vor {time} gesendet",
+  "latest_update": "Neuestes Update",
+  "revenue": "Einnahmen",
+  "last_()_hours": "letzte {time} stunden",
+  "last_()_months": "letzte {time} monate",
+  "last_()_years": "letzte {time} jahren",
+  "disk_usage": "Festplattennutzung",
+  "companies_joined": "{company} Unternehmen sind in den letzten {time} beigetreten",
+  "with_supported_skill": "Mit {skill} unterstützten Fähigkeiten",
+  "average_screen_test_weekly": "{avg} durchschnittlicher Bildschirmtest wöchentlich",
+  "screening_summary": "Vorführung Zusammenfassung",
+  "last_screening": "Letztes Vorführung {time}"
+}

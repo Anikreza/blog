@@ -1,0 +1,129 @@
+.v-navigation-drawer {
+  @include shadow-big();
+
+
+  .v-list {
+    background: $sidebar-bg;
+    padding: 0;
+
+    .v-list-item {
+      border-radius: 0;
+
+      &:not(:nth-child(3)) {
+        margin: $margin-small $margin-general 0;
+      }
+
+      &:nth-child(3) {
+        margin: 0 $margin-general;
+      }
+
+      & > .v-list__item {
+        padding: $padding-small $padding-general;
+
+        &:hover,
+        &:focus,
+        &:active {
+          background-color: $list-item-hover;
+        }
+
+        .v-list-item__title {
+          font-size: $font-size-general !important;
+          font-weight: $font-weight-lighter;
+          padding: 0;
+        }
+      }
+
+      .v-list-item__action {
+        margin-right: $margin-general;
+        min-width: unset;
+
+        i {
+          width: $icon-width;
+        }
+      }
+
+      .v-list-item:not(.v-list__item--active) .v-list-item__action i {
+        opacity: $list-item-icon-opacity;
+      }
+
+      .v-list-item.v-list-item--active {
+        @include shadow-big-color($brand-success);
+      }
+    }
+
+    .v-list-item__avatar {
+      height: unset;
+      padding: $padding-logo 0;
+    }
+
+    .v-list-item__avatar {
+      //margin-left: $margin-list-left;
+      margin-right: $margin-list-right;
+      min-width: unset;
+    }
+
+    .v-list-item__title {
+      line-height: $line-height;
+      padding: $padding-avatar-title 0;
+      height: unset;
+      font-size: $font-size-avatar-title !important;
+      font-weight: $font-weight-base;
+      letter-spacing: unset !important;
+    }
+
+    .v-divider {
+      border-color: $black-opacity-3;
+      margin: $divider-margins auto $divider-margins + 25;
+      width: $divider-width;
+
+    }
+
+    .v-image-image--contain {
+      top: $top-dim;
+    }
+
+    .v-avatar {
+      @include shadow-big;
+    }
+  }
+
+  .navigation-wrapper {
+    .parent-group-items {
+      &.v-list-group--active {
+        background-color: $brand-bg-color-v2 !important;
+
+        .single-item {
+          background-color: $brand-bg-color-v2 !important;
+        }
+      }
+
+      .child-group-items {
+
+        .v-list-group__header {
+          padding-left: 0;
+          background-color: $brand-bg-color-v2 !important;
+        }
+
+        .v-list-item__icon {
+          margin-left: 8px;
+          margin-right: 32px;
+        }
+
+        .single-item {
+          padding-left: 0;
+        }
+      }
+    }
+  }
+
+  .filter-wrapper {
+    display: flex;
+    justify-content: center;
+
+    .filter-button {
+      position: relative !important;
+      top: auto !important;
+      border-radius: 2px;
+    }
+  }
+}

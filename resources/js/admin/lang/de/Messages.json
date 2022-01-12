@@ -1,0 +1,7 @@
+{
+  "login_failed": "Falsche Anmeldeinformationen",
+  "invalid_phone_number": "Keine gültige Telefonnummer",
+  "nothing_matched_your_search_criteria": "Nichts entsprach Ihren Suchkriterien",
+  "saved_successfully": "Erfolgreich gespeichert",
+  "something_went_wrong": "Etwas ist schief gelaufen"
+}

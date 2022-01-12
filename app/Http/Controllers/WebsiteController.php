@@ -14,19 +14,41 @@ class WebsiteController extends Controller
      */
 
     private $articleRepository;
-    public function __construct(ArticleRepository $articleRepository){
+
+    public function __construct(ArticleRepository $articleRepository)
+    {
         $this->articleRepository = $articleRepository;
     }
+
     public function index()
     {
-
-        $slidersArticles = $this->articleRepository->publishedFeaturedArticle(1, 4);
+        $publishedArticles = $this->articleRepository->publishedArticles(1, 4);
+        $featuredArticles = $this->articleRepository->publishedFeaturedArticles(1, 3);
+        $mostReadArticles = $this->articleRepository->mostReadArticles(1, 3);
 
         return view('pages.home.index',
             compact(
-                'slidersArticles',
+                'publishedArticles',
+                'featuredArticles',
+                'mostReadArticles'
             )
         );
+    }
+
+    public function articleDetails($slug)
+    {
+        $article = $this->articleRepository->getArticle($slug, true);
+        $category = $article['categories'][0];
+        $similarArticles = $this->articleRepository->getSimilarArticles($category['id'], 2);
+
+        $cacheKey = request()->ip() . $slug;
+        \Cache::remember($cacheKey, 60, function () use ($article) {
+            $article->viewed = $article->viewed + 1;
+            $article->save();
+            return true;
+        });
+        
+        return view('pages.articleDetail.index', compact('article','similarArticles','category'));
     }
 
     /**
@@ -42,7 +64,7 @@ class WebsiteController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -53,7 +75,7 @@ class WebsiteController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -64,7 +86,7 @@ class WebsiteController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -75,8 +97,8 @@ class WebsiteController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -87,7 +109,7 @@ class WebsiteController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

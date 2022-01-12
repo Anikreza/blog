@@ -1,0 +1,106 @@
+.content-row {
+    margin: 0 -3px;
+
+    .article-content {
+        padding: 0;
+    }
+
+    .sidebar-articles {
+        padding: 0 0 0 40px;
+
+        .section-title {
+            padding-bottom: 20px;
+        }
+
+        .card-header-section {
+            padding: 20px;
+        }
+    }
+}
+
+.article-page-wrapper {
+    .meta-info {
+        display: flex;
+    }
+
+
+    .article-title {
+        padding-top: 0 !important;
+        margin-top: 0;
+
+        &:hover {
+            text-decoration: none;
+            cursor: auto;
+        }
+    }
+
+    .highlight {
+        font-family: $regularFont;
+        font-weight: 400;
+        font-size: 11px;
+        line-height: 16px;
+        color: $lightGrayAlt;
+    }
+
+    .cover-image {
+        padding: 25px 0;
+
+        .highlight {
+            padding-top: 15px;
+        }
+    }
+
+    .description {
+        @include descriptionBasic;
+
+        p {
+            img {
+                width: 100%;
+                display: block;
+                margin: 0 auto;
+            }
+        }
+
+        border-bottom: 2px solid $borderColor;
+        margin-bottom: 20px;
+    }
+
+    .similar-articles {
+        .section-title {
+            padding-bottom: 20px;
+            //font-family: $regularFont;
+        }
+
+        .article-card {
+            height: 180px;
+        }
+
+        .card-header-section {
+            padding: 20px;
+        }
+
+        .article-title {
+            font-size: 18px !important;
+            line-height: 24px !important;
+            color: $darkBlue;
+        }
+    }
+
+}
+
+.content-section {
+    padding: 0 3px;
+
+    .article-title {
+        @include nexa-bold-font;
+        color: $darkBlue;
+        font-size: 24px;
+        line-height: 26px;
+        padding: 10px 0 10px 0;
+    }
+
+    .description {
+        @include descriptionBasic;
+    }
+}
+

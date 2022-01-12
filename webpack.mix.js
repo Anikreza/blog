@@ -1,5 +1,6 @@
 const mix = require('laravel-mix');
-
+const path = require('path');
+let config = require('./webpack.config');
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -11,6 +12,21 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
+mix.js('resources/js/app.js', 'public/js/admin/index.js')
     .vue()
-    .sass('resources/sass/app.scss', 'public/css');
+    .version();
+
+mix.sass('resources/sass/admin/index.scss', 'public/css/admin.css')
+    .sass('resources/sass/website/index.scss', 'public/css')
+    .copyDirectory('resources/assets/', 'public/')
+    .version();
+
+mix.webpackConfig(config);
+
+mix.options({
+    processCssUrls: false,
+    postCss: [],
+    terser: {},
+    autoprefixer: {},
+    legacyNodePolyfills: false
+});

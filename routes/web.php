@@ -16,7 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WebsiteController::class, 'index'])->name('home');
 
-Route::get('/articleDetail', function () {
-    return view('pages.articleDetail.index');
-});
+//Route::get('/articleDetail', function () {
+//    return view('pages.articleDetail.index');
+//});
+
+Route::get('/{slug}', [WebsiteController::class, 'articleDetails'])->name('article-details');
 

@@ -1,0 +1,7 @@
+{
+  "login_failed": "Incorrect login info",
+  "invalid_phone_number": "Not a valid phone number",
+  "nothing_matched_your_search_criteria": "Nothing matched your search criteria",
+  "saved_successfully": "Saved Successfully",
+  "something_went_wrong": "Something went wrong"
+}

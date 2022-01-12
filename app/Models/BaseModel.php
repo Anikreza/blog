@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class BaseModel extends Model
 {
+
     protected static function boot()
     {
         parent::boot();
@@ -21,6 +21,4 @@ class BaseModel extends Model
             $model->attributes['updated_at'] = Carbon::now();
         });
     }
-
-    protected $guarded = [];
 }

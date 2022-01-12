@@ -1,0 +1,5 @@
+{
+  "title": "Title",
+  "siteName": "{siteName}",
+  "footer": "{date} @:(Home.siteName)"
+}

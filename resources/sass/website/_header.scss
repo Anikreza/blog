@@ -1,0 +1,63 @@
+.header {
+    max-height: 100px;
+
+    .logo {
+        height: 50px;
+        width: auto;
+    }
+
+    .nav-link-area {
+        //margin-left: 200px;
+
+        .navbar-nav {
+            display: flex;
+            flex: 1;
+            justify-content: flex-end;
+
+            .nav-link {
+                padding: 26px 15px;
+                @include nexa-bold-font;
+                //@include nexa-regular-font;
+                line-height: 34px !important;
+                color: $darkBlue;
+
+                &.active {
+                    color: #4cb6cd;
+                }
+
+                &:hover {
+                    color: #4cb6cd;
+                }
+            }
+        }
+
+        .search-area {
+            margin-left: 40px;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .navbar-toggler {
+        padding: 0;
+        margin-right: -5px;
+
+        .material-icons {
+            display: flex;
+            font-size: 30px;
+            color: $darkBlue;
+            height: -webkit-fill-available;
+            place-content: flex-end;
+            align-self: flex-end;
+        }
+    }
+}
+
+.nav-bar-icon {
+    position: absolute;
+    z-index: 10;
+    right: 15px;
+    top: 32px;
+}

@@ -1,0 +1,97 @@
+@import "responsive";
+
+@mixin breakpoint($class) {
+  @if $class == $mobileDevice {
+    @media (max-width: $mobileBreakPoint) {
+      @content;
+    }
+  } @else if $class == $tabDevice {
+    @media (min-width: $mobileBreakPoint) and (max-width: $tabBreakPoint) {
+      @content;
+    }
+  } @else if $class == $mediumDevice {
+    @media (min-width: $tabBreakPoint) and (max-width: $mediumDeviceBreakPoint) {
+      @content;
+    }
+  } @else if $class == $largeDevice {
+    @media (min-width: $mediumDeviceBreakPoint) and (max-width: $largeDeviceBreakPoint) {
+      @content;
+    }
+  } @else if $class == $extraLargeDevice {
+    @media (min-width: $largeDeviceBreakPoint) {
+      @content;
+    }
+  } @else if $class == $largerThanMobile {
+    @media (min-width: $mobileBreakPoint) {
+      @content;
+    }
+  } @else if $class == $largerThanTab {
+    @media (min-width: $tabBreakPoint) {
+      @content;
+    }
+  } @else if $class == $largerThanMediumDevice {
+    @media (min-width: $mediumDeviceBreakPoint) {
+      @content;
+    }
+  } @else if $class == $largerThanLargerDevice {
+    @media (min-width: $largeDeviceBreakPoint) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint mixin supports: xs, sm, md, lg";
+  }
+}
+
+
+@mixin set-gradient-color($gradientColorSet, $direction: right) {
+  @include linear-gradient($direction, $gradientColorSet);
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+}
+
+@mixin linear-gradient($direction,$gradientColorSet) {
+  /* fallback for old browsers */
+  background: nth($gradientColorSet, 1) !important;
+  /* Chrome 10-25, Safari 5.1-6 */
+  background-image: -webkit-linear-gradient(to $direction, $gradientColorSet) !important;
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background-image: linear-gradient(to $direction, $gradientColorSet) !important;
+}
+
+%animation {
+  moz-transition: all .5s ease-in-out !important;
+  -o-transition: all .5s ease-in-out !important;
+  -webkit-transition: all .5s ease-in-out !important;
+  transition: all .5s ease-in-out !important;
+}
+
+%hoverAnimation {
+  -webkit-transform: scale(0.95) !important;
+  -ms-transform: scale(0.95) !important;
+  transform: scale(0.95) !important;
+}
+
+%spinAnimation {
+  animation: spin 0.3s linear !important;
+
+  @-webkit-keyframes spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg)
+    }
+    100% {
+      -webkit-transform: rotate(359deg);
+      transform: rotate(359deg)
+    }
+  }
+  @keyframes spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg)
+    }
+    100% {
+      -webkit-transform: rotate(359deg);
+      transform: rotate(359deg)
+    }
+  }
+}
