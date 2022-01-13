@@ -22,6 +22,7 @@
                 <v-list dense nav class="navigation-wrapper">
                     <v-list-item>
                         <v-img
+                            @click="openHomePage"
                             :src="logo"
                             height="55"
                             contain
@@ -102,6 +103,9 @@ export default {
         siteTitle() {
             return process.env.MIX_APP_NAME
         },
+        siteUrl() {
+            return process.env.MIX_APP_URL
+        }
     },
     mounted() {
         this.onResponsiveInverted()
@@ -120,6 +124,9 @@ export default {
                 link.active = false
                 return link
             })
+        },
+        openHomePage() {
+            window.open(this.siteUrl, '_blank')
         }
     }
 }

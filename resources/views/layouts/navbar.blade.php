@@ -10,7 +10,7 @@
                 <!-- Logo  -->
                 <div class="header-logo logo">
                     <a href="./" class="logo-link">
-                        <img class="logo-white" href="{{ asset('assets/images/logo.png') }}" src="images/logo.png" srcset="images/logo2x.png 2x" alt="logo">
+                        <img class="logo-white"  src="images/logo.png" srcset="images/logo2x.png 2x" alt="logo">
                     </a>
                 </div>
 

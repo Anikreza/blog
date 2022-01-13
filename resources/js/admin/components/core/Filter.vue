@@ -23,19 +23,19 @@
       <v-container grid-list-xl>
         <v-layout wrap class="pb-5">
           <v-divider class="mt-3"/>
-          <v-flex xs12>
-            <div class="text-center body-2 text-uppercase filter-menu-item-label">Active Language</div>
-            <v-layout justify-center class="theme-changer">
-              <v-avatar
-                  v-for="t in $i18n.availableLocales"
-                  :key="t"
-                  :class="[t === $i18n.locale ? 'color-active bg-color-success' : 'bg-color-'+color]"
-                  v-text="t.toUpperCase()"
-                  size="50"
-                  @click="setLocale(t)"
-              />
-            </v-layout>
-          </v-flex>
+<!--          <v-flex xs12>-->
+<!--            <div class="text-center body-2 text-uppercase filter-menu-item-label">Active Language</div>-->
+<!--            <v-layout justify-center class="theme-changer">-->
+<!--              <v-avatar-->
+<!--                  v-for="t in $i18n.availableLocales"-->
+<!--                  :key="t"-->
+<!--                  :class="[t === $i18n.locale ? 'color-active bg-color-success' : 'bg-color-'+color]"-->
+<!--                  v-text="t.toUpperCase()"-->
+<!--                  size="50"-->
+<!--                  @click="setLocale(t)"-->
+<!--              />-->
+<!--            </v-layout>-->
+<!--          </v-flex>-->
           <v-divider class="mt-3"/>
           <v-flex xs12>
             <div class="text-center body-2 text-uppercase filter-menu-item-label">Active Theme</div>

@@ -2,7 +2,11 @@
     <nav class="navbar navbar-expand-lg  header">
         <div class="container-fluid">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Meraner Morgen Logo" class="logo">
+                @if(isset($logoInfo['img'])  && $logoInfo['img'] && $logoInfo['img'] !== null)
+                    <img src="{{ $logoInfo['img'] }}" alt="{{ $logoInfo['title'] }}" class="logo">
+                @else
+                    {{ env('APP_NAME') }}
+                @endif
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -13,18 +17,19 @@
 
             <div class="collapse navbar-collapse nav-link-area" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    @foreach($navigationOptions as $option)
+                    @foreach($categories as $key => $category)
                         <li class="nav-item">
-                            <a class="nav-link @if(url()->current() == route('category', ['slug' => Str::slug($option)]) ) active @endif"
+                            <a class="nav-link @if(url()->current() == route('category', ['slug' => $key]) ) active @endif"
                                aria-current="page"
-                               href="{{ route('category', ['slug' => Str::slug($option)]) }}">{{ $option }}</a>
+                               href="{{ route('category', ['slug' => $key]) }}">{{ strtoupper($category) }}</a>
                         </li>
                     @endforeach
                 </ul>
-                <form class="d-flex search-area">
+                <div class="d-flex search-area" onclick="openSearch()">
                     {{--                        <input class="hidden" type="search" placeholder="Search" aria-label="Search">--}}
-                    <img src="{{ asset('images/icons/search.svg') }}" alt="search" height="22">
-                </form>
+                    <img src="{{ asset('images/icons/search.svg') }}" class="hide-for-mobile" alt="search" height="22">
+                    <span class="hide-for-desktop search-label">Suche</span>
+                </div>
             </div>
         </div>
     </nav>

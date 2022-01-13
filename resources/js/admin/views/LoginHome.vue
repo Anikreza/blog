@@ -15,7 +15,6 @@
 
 <script>
 export default {}
-console.log('url',process.env.APP_URL)
 </script>
 
 <style>

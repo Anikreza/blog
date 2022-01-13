@@ -10,6 +10,7 @@
     <template v-slot:activator="{ on, attrs }">
 
       <VTextFieldWithValidation :rules="rules"
+                                outlined
                                 v-model="date"
                                 :label="$t(`Fields.${fieldKey}`)"
                                 :field="fieldKey"

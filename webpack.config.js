@@ -22,7 +22,10 @@ module.exports = {
                 MIX_APP_NAME: JSON.stringify(process.env.APP_NAME),
             }
         }),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new webpack.ProvidePlugin({
+            'window.Quill': 'quill'
+        })
     ],
     watchOptions: {ignored: /node_modules/}
 }

@@ -1,6 +1,7 @@
 <template>
   <ValidationProvider :name="field" :rules="rules" v-slot="{ errors, valid}">
     <v-text-field
+        outlined
         v-model="inner_value"
         :error-messages="errors"
         :success="valid"

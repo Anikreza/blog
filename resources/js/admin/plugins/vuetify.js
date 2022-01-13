@@ -12,6 +12,8 @@ const opts = {
     theme: theme
 }
 
-Vue.use(Vuetify)
 
-export default new Vuetify(opts)
+Vue.use(Vuetify)
+const vuetify = new Vuetify(opts)
+
+export default vuetify

@@ -10,16 +10,22 @@ import router from '@/router'
 import store from '@/store'
 import vuetify from '@/plugins/vuetify'
 import '@/plugins/errorLogger'
-import helper from '@/plugins/helper'
+import helper from '@/plugins/helper';
+import VueToastr from "vue-toastr";
+
+Vue.use(VueToastr, {});
 
 Vue.prototype.$helper = helper
 
 Vue.config.productionTip = false
 
 new Vue({
-  vuetify,
-  i18n,
-  router,
-  store,
-  render: h => h(App)
+    vuetify,
+    i18n,
+    router,
+    store,
+    render: h => h(App),
+    mounted() {
+        this.$toastr.defaultPosition = "toast-top-right";
+    }
 }).$mount('#app')

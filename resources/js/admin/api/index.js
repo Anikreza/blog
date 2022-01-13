@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 
 class HttpClient {
     constructor() {
@@ -30,6 +30,14 @@ class HttpClient {
             ) {
                 localStorage.clear()
                 window.location.href = '/'
+            } else if (422 === error.response.status) {
+                let errors = [];
+
+                for (let [key, value] of Object.entries(error.response.data.errors)) {
+                    errors = [...errors, ...value]
+                }
+
+                error.response.errors = errors;
             }
 
             return error.response
@@ -46,7 +54,7 @@ class HttpClient {
             config.headers.common['Accept-Language'] = localStorage.getItem('locale') || 'de'
 
             return config
-        })
+        });
     }
 
     requestType(type) {

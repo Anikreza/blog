@@ -13,6 +13,7 @@ export class AppStorage {
   }
 
   getItem (key) {
+      console.log(this.storage);
     return JSON.parse(this.storage.getItem(key))
   }
 
