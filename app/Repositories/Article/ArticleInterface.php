@@ -11,6 +11,6 @@ interface ArticleInterface
 
     public function paginateWithFilter(int $limit);
 
-    public function paginateByCategoryWithFilter(int $perPage, int $categoryId, bool $onlyVideo);
+    public function paginateByCategoryWithFilter(int $perPage, int $categoryId);
 
 }

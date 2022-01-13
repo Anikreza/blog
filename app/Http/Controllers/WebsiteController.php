@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Repositories\Article\ArticleRepository;
 
@@ -18,6 +19,8 @@ class WebsiteController extends Controller
     public function __construct(ArticleRepository $articleRepository)
     {
         $this->articleRepository = $articleRepository;
+        $categories = Category::select('name', 'slug')->where('is_published', 0)->orderBy('position', 'asc')->pluck('name', 'slug');
+        view()->share('categories', $categories);
     }
 
     public function index()
@@ -47,8 +50,21 @@ class WebsiteController extends Controller
             $article->save();
             return true;
         });
-        
+
         return view('pages.articleDetail.index', compact('article','similarArticles','category'));
+    }
+    public function categoryDetails($slug)
+    {
+        $category = Category::where('slug', $slug)->first();
+        $segments = [
+            [
+                'name' => "{$category->name}",
+                'url' => route('category', ['slug' => $category->slug])
+            ],
+        ];
+        $categoryArticles = $this->articleRepository->paginateByCategoryWithFilter(5, $category->id);
+
+        return view('pages.category.index', compact('segments', 'category','categoryArticles'));
     }
 
     /**

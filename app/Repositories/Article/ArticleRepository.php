@@ -35,9 +35,12 @@ class ArticleRepository implements ArticleInterface
         // TODO: Implement paginateWithFilter() method.
     }
 
-    public function paginateByCategoryWithFilter(int $perPage, int $categoryId, bool $onlyVideo)
+    public function paginateByCategoryWithFilter(int $perPage, int $categoryId)
     {
-        // TODO: Implement paginateByCategoryWithFilter() method.
+        return $this->baseQuery($categoryId)
+            ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed')
+            ->latest()
+            ->paginate($perPage);
     }
 
     private function baseQuery(int $categoryId = 1)
@@ -55,6 +58,7 @@ class ArticleRepository implements ArticleInterface
         return $this->baseQuery($categoryId)
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed')
             ->with('favorites')
+            ->with('categories')
             ->latest()
             ->limit($limit)
             ->get();

@@ -1,5 +1,5 @@
 @extends('master')
-@include('layouts.navbar')
+@section('content')
 <div class="section blog section-x">
     <div class="container">
 
@@ -84,3 +84,4 @@
         </div><!-- .row -->
     </div><!-- .container -->
 </div>
+@endsection
