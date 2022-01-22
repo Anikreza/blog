@@ -7,7 +7,9 @@
                     <div class="wgs-content">
                         <div class="wgs-logo">
                             <a href="./">
-                                <img href="{{ asset('assets/images/logo-white.png') }}" src="{{ asset('assets/images/logo-white.png') }}" srcset="images/logo-white2x.png" alt="logo">
+                                <img href="{{ asset('assets/images/logo-white.png') }}"
+                                     src="{{ asset('assets/images/logo-white.png') }}" srcset="images/logo-white2x.png"
+                                     alt="logo">
                             </a>
                         </div>
                         <p>&copy; 2019. All rights reserved.<br> Designed & Developed by <a href="#">Softnio</a></p>
@@ -17,11 +19,12 @@
             <div class="col-lg-3 col-sm-6">
                 <div class="wgs">
                     <div class="wgs-content">
-                        <h3 class="wgs-title">Company</h3>
+                        <h3 class="wgs-title">Columnist</h3>
                         <ul class="wgs-menu">
-                            <li><a href="dallas-about.html">About us</a></li>
-                            <li><a href="texas-about.html">Why Genox?</a></li>
-                            <li><a href="dallas-team.html">Meet the team</a></li>
+                            <li>
+                                <a
+                                    href="{{ url('columnist') }}" class="footer-links">About
+                                </a>
                         </ul>
                     </div>
                 </div><!-- .wgs -->
@@ -31,9 +34,13 @@
                     <div class="wgs-content">
                         <h3 class="wgs-title">Services</h3>
                         <ul class="wgs-menu">
-                            <li><a href="dallas-services.html">Digital Media</a></li>
-                            <li><a href="texas-services.html">Strategy</a></li>
-                            <li><a href="florida-services.html">Development</a></li>
+                            @foreach($footerPages as $pageLink)
+                                <li>
+                                    <a
+                                        href="{{ route('article-details', ['slug' => $pageLink['page']['slug']]) }}">{{ $pageLink['page']['title'] }}
+                                    </a>
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
                 </div><!-- .wgs -->
@@ -47,7 +54,7 @@
                             <div class="field-group btn-inline">
                                 <input name="s_email" type="email" class="input" placeholder="Your  Email">
                                 <input type="text" class="d-none" name="form-anti-honeypot" value="">
-                                <button type="submit"  class="far fa-paper-plane button"></button>
+                                <button type="submit" class="far fa-paper-plane button"></button>
                             </div>
                         </form>
                     </div>
@@ -59,7 +66,9 @@
 <!-- .footer -->
 
 <!-- preloader -->
-<div class="preloader preloader-light preloader-dalas no-split"><span class="spinner spinner-alt"><img class="spinner-brand" src="{{ asset('assets/images/logo-white.png') }}" src="images/logo-white.png" alt=""></span></div>
+<div class="preloader preloader-light preloader-dalas no-split"><span class="spinner spinner-alt"><img
+            class="spinner-brand" src="{{ asset('assets/images/logo-white.png') }}" src="images/logo-white.png" alt=""></span>
+</div>
 
 <!-- JavaScript -->
 <script src="{{ asset('assets/js/jquery.bundle.js?ver=141') }}"></script>

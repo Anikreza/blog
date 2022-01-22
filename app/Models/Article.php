@@ -25,9 +25,7 @@ class Article extends BaseModel
         'image_disk', // 'default: local, option: s3, gc (google cloud), if null then external link'
         'meta_title',
         'featured',
-        'read_time',
         'published',
-        'is_video',
         'viewed'
     ];
 

@@ -1,6 +1,6 @@
-<div class="section section-l bg-white section-news ">
+<div class="section section-l section-news ">
     <br/>
-    <div class="container bg-light-gradient">
+    <div class="container">
         <div class="row justify-content-center">
         </div><!-- .row -->
         <div class="row gutter-vr-30px">

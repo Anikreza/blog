@@ -2,7 +2,7 @@
 @section('content')
     <div class="section blog section-x">
         <div class="container">
-            @include('component.breadcrumb')
+            {{--            @include('component.breadcrumb')--}}
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="post post-full post-details">
@@ -15,10 +15,12 @@
                                     <p>Mar <strong>19</strong></p>
                                 </div>
                                 <ul class="social text-center">
-                                    <li><a href="" class="fac fab fa-facebook-f"></a></li>
-                                    <li><a href="" class="twi fab fa-twitter"></a></li>
-                                    <li><a href="" class="pin fab fa-pinterest-p"></a></li>
-                                    <li><a href="" class="goo fab fa-google-plus-g"></a></li>
+                                    @foreach($shareLinks as $key=>$link)
+                                    <li>
+                                        <a href="{{ $link }}" target="_blank" class='pin fab fa-{{$key}}' >
+                                        </a>
+                                    </li>
+                                    @endforeach
                                 </ul>
                             </div>
                             <div class="post-content post-content-wd">
@@ -66,7 +68,8 @@
                     </span>
                         @foreach($article->keywords as $keyword)
                             <a class="post-tag" href="{{ route('tag', ['slug' => \Str::slug($keyword->title)]) }}">
-                                <span  style=" font-size:16px; margin-left: 10px; background-color:#ea4a4a; color: #ffffff; padding: 10px; border-radius: 5px">{{ $keyword->title }}</span>
+                                <span
+                                    style=" font-size:16px; margin-left: 10px; background-color:#ea4a4a; color: #ffffff; padding: 10px; border-radius: 5px">{{ $keyword->title }}</span>
                             </a>
                         @endforeach
                     </div>
@@ -74,6 +77,7 @@
                     <br/>
                     <!-- tags -->
                     <!-- similar Posts -->
+
                     <div class="wgs">
                         <div class="section-head">
                             <h4 class="label-primary" style="font-weight: 500">Related Posts</h4>

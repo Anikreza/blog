@@ -17,9 +17,9 @@ class AdminSeeder extends Seeder
         $user = [
             'first_name' => 'Christoph',
             'last_name' => 'Swoboda',
-            'gender' => 'm',
-            'email' => 'admin@meraner-morgen.it',
-            'password' => bcrypt('mmtest!'),
+            'gender' => 'male',
+            'email' => 'alex@gmail.com',
+            'password' => bcrypt('12345678'),
             'role' => 1,
             'email_verified_at' => now()
         ];

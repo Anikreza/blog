@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 
 //use App\Models\Page;
+use App\Models\Page;
+use App\Models\PageLink;
 use App\Repositories\Article\ArticleRepository;
 use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
@@ -13,6 +15,7 @@ use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\TwitterCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Share;
 use Str;
 
 
@@ -39,7 +42,7 @@ class WebsiteController extends Controller
         foreach ($tags as $tag)
             array_push($tagTitles,$tag->title);
         $categories = Category::select('name', 'slug')->where('is_published', 0)->orderBy('position', 'asc')->pluck('name', 'slug');
-        $featuredArticles = $this->articleRepository->publishedArticles(1, 3);
+        $featuredArticles = $this->articleRepository->publishedArticles( 3);
         $this->homePageSeoData = json_decode(setting()->get('general'), true);
         $this->baseSeoData = [
             'title' => 'A travel blog site',
@@ -56,6 +59,11 @@ class WebsiteController extends Controller
             'robots' => 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
         ];
 
+        $footerPages = \Cache::remember('footer_pages', config('cache.default_ttl'), function () {
+            return PageLink::where('key', 'footer_pages')->with('page:id,title,slug')->get()->toArray();
+        });
+
+        view()->share('footerPages', $footerPages);
         view()->share('categories', $categories);
         view()->share('tags', $tags);
         view()->share('featuredPosts', $featuredArticles);
@@ -63,9 +71,9 @@ class WebsiteController extends Controller
 
     public function index()
     {
-        $publishedArticles = $this->articleRepository->publishedArticles(1, 4);
-        $featuredArticles = $this->articleRepository->publishedFeaturedArticles(1, 3);
-        $mostReadArticles = $this->articleRepository->mostReadArticles(1, 3);
+        $publishedArticles = $this->articleRepository->publishedArticles( 4);
+        $featuredArticles = $this->articleRepository->publishedFeaturedArticles( 3);
+        $mostReadArticles = $this->articleRepository->mostReadArticles( 3);
 
         $this->seo($this->baseSeoData);
 
@@ -80,9 +88,12 @@ class WebsiteController extends Controller
 
     public function articleDetails($slug)
     {
-        $article = $this->articleRepository->getArticle($slug, true);
+        $article = $this->articleRepository->getArticle($slug);
+        if (!$article) {
+            return $this->renderPage($slug);
+        }
         $category = $article['categories'][0];
-        $similarArticles = $this->articleRepository->getSimilarArticles($category['id'], 2);
+        $similarArticles = $this->articleRepository->getSimilarArticles( 2);
         $tags = $article->keywords;
         $tagTitles=[];
         foreach ($tags as $tag)
@@ -104,11 +115,12 @@ class WebsiteController extends Controller
         });
 
         $appName = env('APP_NAME');
-        $this->baseSeoData['title'] = " $article->title - $appName";
+        $this->baseSeoData['title'] = " $article->title | $appName";
         $this->baseSeoData['keywords'] = $tagTitles;
         $this->seo($this->baseSeoData);
 
-        return view('pages.articleDetail.index', compact('article', 'similarArticles', 'category', 'segments'));
+        $shareLinks = $this->getSeoLinksForDetailsPage($article);
+        return view('pages.articleDetail.index', compact('article', 'similarArticles', 'category', 'segments','shareLinks'));
     }
 
     public function categoryDetails($slug)
@@ -120,7 +132,7 @@ class WebsiteController extends Controller
                 'url' => route('category', ['slug' => $category->slug])
             ],
         ];
-        $categoryArticles = $this->articleRepository->paginateByCategoryWithFilter(5, $category->id);
+        $categoryArticles = $this->articleRepository->paginateByCategoryWithFilter(5);
 
         // SEO META INFO
 //        $name = empty($category->meta_title) ? $category->name : $category->meta_title;
@@ -159,7 +171,6 @@ class WebsiteController extends Controller
         }
 
         $this->seo($this->baseSeoData);
-
         view()->share('tags', $tags);
         return view('pages.tag.index', compact('segments', 'tag', 'tagArticles'));
     }
@@ -179,6 +190,74 @@ class WebsiteController extends Controller
         $this->seo($this->baseSeoData);
 
         return view('pages.search.index', compact('segments', 'searchTerm', 'searchedArticles'));
+    }
+
+    private function generatePageClass($title): \stdClass
+    {
+        $page = new \stdClass();
+        $page->title = $title;
+        $page->excerpt = null;
+        $page->keywords = [];
+        $page->image_url = null;
+
+        return $page;
+    }
+
+    private function getSeoLinksForDetailsPage($data)
+    {
+        $this->baseSeoData = [
+            'title' => $data->title . " | {$this->baseSeoData['app_name']}",
+            'description' => count($data->keywords)? $data->excerpt : $this->baseSeoData['description'],
+            'keywords' => count($data->keywords) ? implode(", ", $data->keywords->pluck('title')->toArray()) : $this->baseSeoData['keywords'],
+            'image' => $data->image_url,
+            'type' => 'article',
+            'site' => env('APP_URL'),
+            'app_name' => $this->baseSeoData['app_name'],
+            'robots' => 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+        ];
+        $this->seo($this->baseSeoData);
+
+        return Share::page(url()->current(), $data->title)
+            ->facebook()
+            ->twitter()
+            ->linkedin($data->excerpt)
+            ->whatsapp()
+            ->telegram()
+            ->getRawLinks();
+    }
+
+    public function renderPage($slug)
+    {
+        $page = Page::where('slug', $slug)->with('keywords')->first();
+
+        if (!$page) {
+            abort(404);
+        }
+
+        $cacheKey = request()->ip() . $slug;
+        \Cache::remember($cacheKey, 60, function () use ($page) {
+            $page->viewed = $page->viewed + 1;
+            $page->save();
+            return true;
+        });
+
+        $segments = [
+            ['name' => $page['title'], 'url' => url($slug)]
+        ];
+
+        return view('pages.pageDetails.index', compact('page', 'segments'));
+    }
+
+    public function getColumnistPage()
+    {
+        $page = $this->generatePageClass('Columnist');
+
+        $segments = [
+            ['name' => $page->title, 'url' => url('Columnist')]
+        ];
+
+        $shareLinks = $this->getSeoLinksForDetailsPage($page);
+        return view('pages.columnist.index', compact('page', 'segments', 'shareLinks'));
     }
 
     /**

@@ -63,6 +63,13 @@ Route::group([
     Route::post("categories/priority-update", [CategoryController::class, 'priorityUpdate']);
     Route::apiResource("categories", CategoryController::class);
 
+    Route::get("fetch-all-published-pages", [PageController::class, 'get']);
+    Route::get("pages/{slug}/edit", [PageController::class, 'edit']);
+    Route::post("pages/{id}", [PageController::class, 'update']);
+    Route::apiResource("pages", PageController::class);
+    Route::post("save-page-ids", [PageController::class, 'savePageIds']);
+
+
     Route::get("articles/{slug}/edit", [ArticleController::class, 'edit']);
     Route::post("articles/{id}", [ArticleController::class, 'update']);
     Route::apiResource("articles", ArticleController::class);

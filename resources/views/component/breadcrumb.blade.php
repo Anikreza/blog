@@ -1,6 +1,6 @@
 @if(isset($segments))
     <nav>
-        <ol class="breadcrumb bg-white">
+        <ol class="breadcrumb" style="background-color: inherit">
             <li class="breadcrumb-item">
                 <a href="{{route('home')}}">Home</a>
             </li>
