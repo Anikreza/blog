@@ -43,19 +43,7 @@
                                 </div>
                                 <h3>{{ $article['title'] }}</h3>
                                 <div class="content">
-                                    {{--                                <p>The Demodern team is responsible for the diverse solutions of the individual applications,--}}
-                                    {{--                                    the overall staging and conception of the 'Discovery Dock. exercitation ullamco laboris nisi --}}
-                                    {{--                                    ut aliquip ex ea commodo.On the other hand we denounce with righteous indignation and dislike--}}
-                                    {{--                                    men who are so beguiled and demoralized by the charms of pleasure of the moment so blinded by--}}
-                                    {{--                                    desire that they cannot foresee the pain and trouble that are bound.</p>--}}
-                                    {{--                                <p class="block-text"><em>On the other hand we denounce with righteous indignation and dislike --}}
-                                    {{--                                        men who are so beguiled and demoralized by the charms of pleasure of the moment so --}}
-                                    {{--                                        blinded by desire that they cannot foresee the pain.</em></p>--}}
-                                    {{--                                <p>Exercitation ullamco laboris nisi ut aliquip ex ea commodo.On the other hand we denounce--}}
-                                    {{--                                    with righteous indignation and dislike men who are so beguiled and demoralized by the charms--}}
-                                    {{--                                    of pleasure of the moment so blinded by desire that they cannot foresee the pain and trouble--}}
-                                    {{--                                    that are bound.</p>--}}
-                                    <p> {{ $article['description'] }}</p>
+                                    {!!  $article['description'] !!}
                                 </div>
                             </div>
                         </div>
