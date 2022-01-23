@@ -76,17 +76,6 @@ class ArticleRepository implements ArticleInterface
         $article = Article::findOrFail($id);
         $isPublishedBefore = $article->published;
 
-        $image = $request->image;
-        if ($image) {
-            $image_ext = $image->getClientOriginalExtension();
-            $image_full_name = time() . '.' . $image_ext;
-            $upload_path = 'assets/images/';
-            $image_url = $upload_path . $image_full_name;
-
-            $image->move($upload_path, $image_full_name);
-        } else {
-            $image_url = '';
-        }
 
         $data = [
             'title' => $request->input('title'),
@@ -96,9 +85,29 @@ class ArticleRepository implements ArticleInterface
             'description' => saveTextEditorImage($request->input('description')),
             'published' => filter_var($request->input('published'), FILTER_VALIDATE_BOOLEAN),
             'meta_title' => $request->input('meta_title'),
-            'image' => $image_url,
         ];
 
+
+        $image = $request->image;
+        if ($image) {
+            $extension = $image->getClientOriginalExtension();
+
+            $image_full_name = time() . '.' . $extension;
+            $upload_path = public_path('assets/images/');
+            $image_url = $upload_path . $image_full_name;
+            $data['image'] = $image_url;
+            $image->move($upload_path, $image_full_name);
+            Image::make($image)->resize(null, 675, function ($constraint) {
+                $constraint->aspectRatio();
+            })->encode($extension)
+                ->save($upload_path . $data['image']);
+            Image::make($image)->resize(null, 200, function ($constraint) {
+                $constraint->aspectRatio();
+            })->encode($extension)
+                ->save($upload_path . $data['image']);
+        } else {
+            $image_url = '';
+        }
 
         // Category
         $article->categories()->detach();
@@ -200,7 +209,7 @@ class ArticleRepository implements ArticleInterface
             ->get();
     }
 
-    public function publishedFeaturedArticles( int $limit)
+    public function publishedFeaturedArticles(int $limit)
     {
         return $this->model
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
@@ -210,7 +219,7 @@ class ArticleRepository implements ArticleInterface
             ->get();
     }
 
-    public function mostReadArticles( int $limit)
+    public function mostReadArticles(int $limit)
     {
         return $this->model
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
@@ -231,7 +240,7 @@ class ArticleRepository implements ArticleInterface
             ->first();
     }
 
-    public function getSimilarArticles( $limit)
+    public function getSimilarArticles($limit)
     {
         return $this->model
             ->select('id', 'title', 'slug', 'published', 'viewed', 'image', 'featured', 'description')
@@ -263,8 +272,8 @@ class ArticleRepository implements ArticleInterface
 
         return [
             'tagInfo' => $tag,
-            'tags' =>  $tags,
-            'articles' =>$this->getArticlesByTag($perPage, $tag->pluck('id')->toArray())
+            'tags' => $tags,
+            'articles' => $this->getArticlesByTag($perPage, $tag->pluck('id')->toArray())
         ];
     }
 

@@ -2,7 +2,7 @@
 @section('content')
     <div class="section blog section-x">
         <div class="container">
-            {{--            @include('component.breadcrumb')--}}
+            @include('component.breadcrumb')
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="post post-full post-details">
@@ -16,10 +16,10 @@
                                 </div>
                                 <ul class="social text-center">
                                     @foreach($shareLinks as $key=>$link)
-                                        <li>
-                                            <a href="{{ $link }}" target="_blank" class='pin fab fa-{{$key}}'>
-                                            </a>
-                                        </li>
+                                    <li>
+                                        <a href="{{ $link }}" target="_blank" class='pin fab fa-{{$key}}' >
+                                        </a>
+                                    </li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -43,7 +43,7 @@
                                 </div>
                                 <h3>{{ $article['title'] }}</h3>
                                 <div class="content">
-                                    {!! $article['description'] !!}
+                                    {!!  $article['description'] !!}
                                 </div>
                             </div>
                         </div>
