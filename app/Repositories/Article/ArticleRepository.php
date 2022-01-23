@@ -105,7 +105,7 @@ class ArticleRepository implements ArticleInterface
         $article->categories()->sync([$request->input('categories')]);
 
         // Keywords
-        $newKeywords = explode(',', $request->input('keywords'));
+        $newKeywords = explode(',', $request->input('keywords'));git branch
         $keywordIds = [];
 
         foreach ($newKeywords as $keyword) {

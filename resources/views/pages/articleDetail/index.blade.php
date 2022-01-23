@@ -2,7 +2,7 @@
 @section('content')
     <div class="section blog section-x">
         <div class="container">
-            {{--            @include('component.breadcrumb')--}}
+            @include('component.breadcrumb')
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="post post-full post-details">
