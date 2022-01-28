@@ -5,7 +5,7 @@ class ArticleApi extends HttpClient {
         return this.requestType('get').request(`/articles?page=${page}&${query}`)
     }
     ArticleCount() {
-        return this.requestType('get').request(`/articles`)
+        return this.requestType('get').request(`articles`)
     }
 
     get(slug) {

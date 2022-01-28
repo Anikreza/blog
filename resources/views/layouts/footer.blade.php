@@ -6,8 +6,8 @@
                 <div class="wgs">
                     <div class="wgs-content">
                         <div class="wgs-logo">
-                            <a href="./">
-                                <img href="{{ asset('assets/images/logo-white.png') }}" src="{{ asset('assets/images/logo-white.png') }}" srcset="images/logo-white2x.png" alt="logo">
+                            <a href="/">
+                                <img srcset="{{ asset('assets/images/logo-white.png') }}" alt="logo">
                             </a>
                         </div>
                         <p>&copy; 2019. All rights reserved.<br> Designed & Developed by <a href="#">Softnio</a></p>

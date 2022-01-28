@@ -13,7 +13,7 @@
 
 <body class="body-wider">
 @include('layouts.navbar')
-<div  style="background: linear-gradient(180deg,#ffffff,#e0cccc,#ffffff) ">
+<div  style="background: linear-gradient(180deg,#ffffff,#cce0d0,#ffffff) ">
     @yield('content')
 </div>
 @include('layouts.footer')

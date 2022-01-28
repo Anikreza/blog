@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateKeywordsTable extends Migration
+class CreateVisitorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -18,6 +18,8 @@ class CreateKeywordsTable extends Migration
             $table->string('ip');
             $table->integer('hits');
             $table->Datetime('visit_date');
+            $table->Datetime('last_day_visit_flag');
+            $table->integer('lastDayRecord');
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ class CreateKeywordsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('keywords');
+        Schema::dropIfExists('visitors');
     }
 }

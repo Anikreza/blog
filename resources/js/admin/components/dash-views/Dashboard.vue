@@ -411,13 +411,6 @@ export default {
             totalVisitsAllTime: 0,
             categories: 0,
             dailyData: [],
-            day1: 2,
-            day2: 2,
-            day3: 2,
-            day4: 2,
-            day5: 2,
-            day6: 2,
-            day7: 2,
         }
     },
 

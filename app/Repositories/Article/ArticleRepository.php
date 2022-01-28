@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Keyword;
 use App\Models\Visitor;
+use Cache;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -125,7 +126,9 @@ class ArticleRepository implements ArticleInterface
     public function delete(int $id)
     {
         $article = Article::findOrFail($id);
-        Storage::disk($this->disk)->delete('articles/' . $article->image);
+        if (File::exists($article->image)) {
+            File::delete($article->image);
+        }
         $article->categories()->detach();
         $article->keywords()->detach();
 
@@ -181,12 +184,20 @@ class ArticleRepository implements ArticleInterface
         return Article::all()->count();
     }
 
-    public function SetVisitor()
-    {
+    public function SetVisitor()   {
         $ip = request()->ip();
-        $visited_date = Date("Y-m-d:H:i:s");
+        $visited_date = Carbon::now();
         $visitor = Visitor::firstOrCreate(['ip' => $ip], ['visit_date' => $visited_date]);
         $visitor->increment('hits');
+        $visitor->increment('lastDayRecord');
+
+        Visitor::where('visit_date', '<', Carbon::now()->subDays(1))
+            ->update(['lastDayRecord' => 0]);
+
+        Visitor::where('created_at', '<', Carbon::now()->subDays(1))
+            ->update(['visit_date' => Carbon::now(), 'created_at' => Carbon::now()]);
+
+
     }
 
     public function getTotalVisitCount(): int
@@ -196,9 +207,8 @@ class ArticleRepository implements ArticleInterface
 
     public function getLastDaysTotalVisitCount(): int
     {
-        return Visitor::where('created_at', '>', Carbon::now()->subDays(1))
-            ->groupBy(\DB::raw('HOUR(created_at)'))
-            ->sum('hits');
+        return Visitor::where('updated_at', '>', Carbon::now()->subDays(1))
+            ->sum('lastDayRecord');
     }
 
     public function getUniqueVisitorCount(): int
@@ -208,9 +218,8 @@ class ArticleRepository implements ArticleInterface
 
     public function getLastWeeksUniqueVisitorCount()
     {
-        return Visitor::where('created_at', '>', Carbon::now()->subDays(7))
-            ->groupBy(\DB::raw('HOUR(created_at)'))
-            ->count();
+        return Visitor::where('updated_at', '>', Carbon::now()->subDays(7))
+            ->count('id');
     }
 
     public function getLastWeeksVisitCountByDay()
@@ -220,8 +229,8 @@ class ArticleRepository implements ArticleInterface
 //        foreach ($data as $key=>$item) {
 //            $visitorsPerDay[] = $item->visits;
 //        }
-        return Visitor::select( DB::raw('sum(hits) as visits'))
-            ->where('created_at', ">", DB::raw('NOW() - INTERVAL 1 WEEK'))
+        return Visitor::select(DB::raw('sum(hits) as visits'))
+            ->where('visit_date', ">", DB::raw('NOW() - INTERVAL 1 WEEK'))
             ->groupBy('visit_date')
             ->get();
     }
