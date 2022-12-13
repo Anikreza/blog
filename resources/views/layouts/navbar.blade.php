@@ -25,11 +25,11 @@
                 <div class="header-navbar">
                     <nav class="header-menu" id="header-menu">
                         <ul class="menu">
-                            @foreach($categories as $key => $category)
+                            @foreach($categories as $category)
                                 <li class="nav-item">
-                                    <a class="nav-link @if(url()->current() == route('category', ['slug' => $key]) ) active @endif"
+                                    <a class="nav-link @if(url()->current() == route('category', ['slug' => $category]) ) active @endif"
                                        aria-current="page"
-                                       href="{{ route('category', ['slug' => $key]) }}">{{ strtoupper($category) }}</a>
+                                       href="{{ route('category', ['slug' => $category]) }}">{{ strtoupper($category) }}</a>
                                 </li>
                             @endforeach
                         </ul>

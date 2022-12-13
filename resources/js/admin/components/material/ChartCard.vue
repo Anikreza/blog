@@ -41,7 +41,7 @@ export default {
       default: () => ([])
     },
     options: {
-      type: Object,
+      type: Array,
       default: () => ({})
     },
     ratio: {

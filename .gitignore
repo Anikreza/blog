@@ -1,9 +1,12 @@
 /node_modules
 /public/hot
 /public/storage
+/public/uploads
 /public/css
 /public/js/admin
+/public/plugins
 /public/mix-manifest.json
+/public/ads.text
 /storage/*.key
 /vendor
 .idea
@@ -15,3 +18,4 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/storage/settings.json

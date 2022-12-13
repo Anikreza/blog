@@ -65,7 +65,6 @@ import VTextFieldWithValidation from '@/components/inputs/VTextFieldWithValidati
 import DatePickerWithValidation from '@/components/inputs/DatePickerWithValidation'
 import VRadioInputWithValidation from '@/components/inputs/VRadioInputWithValidation'
 import VFileInputWithValidation from '@/components/inputs/VFileInputWithValidation'
-
 export default {
     name: 'information-update-card',
     components: {
@@ -102,10 +101,8 @@ export default {
         async onSubmit() {
             const validated = await this.$refs.profileForm.validate()
             if (!validated) return
-
             const {address, ...profile} = this.profile
             const formData = {...profile, ...address}
-
             this.$store.dispatch('saveProfile', formData)
                 .then(() => this.$store.dispatch('app/setSnackbarMessage', this.$t('Messages.saved_successfully')))
                 .catch(() => this.$store.dispatch('app/setSnackbarMessage', this.$t('Messages.something_went_wrong')))

@@ -1,9 +1,9 @@
-<div class="post-thumb">
+<div class="post-thumb" style="padding: 4%">
     <a href="{{ route('article-details', ['slug' => $slug]) }}">
-        <img src="{{asset($image)}}" style="width: 100%"/>
+        <img src="{{asset($image)}}" style="width: 100%; box-shadow: 3px 3px 3px 3px #707070; border-radius: 5px"/>
     </a>
 </div>
-<div class="post-entry bg-white d-sm-flex d-block align-items-start">
+<div class="post-entry d-sm-flex d-block align-items-start">
     <div class="post-date">
         <p>Mar <strong>19</strong></p>
     </div>
@@ -12,7 +12,7 @@
             <div class="post-author d-flex align-items-center">
                 <div class="author-thumb">
                     <a href='/articleDetail'>
-                        <img src="{{asset($image)}}"/>
+                        <img src="{{asset('images/author-image-b.jpg')}}"/>
                     </a>
                 </div>
                 <div class="author-name">
@@ -25,7 +25,7 @@
                 </ul>
             </div><!-- .post-tag -->
         </div>
-        <h4><a href="#">{{$title}}</a></h4>
+        <h4><a href="{{ route('article-details', ['slug' => $slug]) }}">{{$title}}</a></h4>
     </div>
 </div>
 

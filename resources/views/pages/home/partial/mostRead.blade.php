@@ -13,7 +13,6 @@
                     @include('component.card.mostReadCard',
                         [
                             'image' => $article['image'],
-                            'description' => $article['description'],
                             'title'=>$article['title'],
                             'slug' => $article['slug'],
                             'category' => $category ?? $article['categories'][0],

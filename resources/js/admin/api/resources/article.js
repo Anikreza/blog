@@ -1,11 +1,11 @@
 import HttpClient from '../index'
 
-class CategoryApi extends HttpClient {
+class ArticleApi extends HttpClient {
     list(page = 1, query) {
         return this.requestType('get').request(`/articles?page=${page}&${query}`)
     }
     ArticleCount() {
-        return this.requestType('get').request(`/articles`)
+        return this.requestType('get').request(`articles`)
     }
 
     get(slug) {
@@ -36,5 +36,5 @@ class CategoryApi extends HttpClient {
     }
 }
 
-const Api = new CategoryApi()
+const Api = new ArticleApi()
 export default Api

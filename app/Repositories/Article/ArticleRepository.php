@@ -3,9 +3,13 @@
 namespace App\Repositories\Article;
 
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\Keyword;
+use App\Models\Visitor;
+use Cache;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
@@ -24,7 +28,6 @@ class ArticleRepository implements ArticleInterface
 
     public function save(Request $request)
     {
-
 
         $image = $request->image;
         if ($image) {
@@ -75,8 +78,6 @@ class ArticleRepository implements ArticleInterface
     {
         $article = Article::findOrFail($id);
         $isPublishedBefore = $article->published;
-
-
         $data = [
             'title' => $request->input('title'),
             'slug' => $this->slugify($request->input('title')),
@@ -85,9 +86,8 @@ class ArticleRepository implements ArticleInterface
             'description' => saveTextEditorImage($request->input('description')),
             'published' => filter_var($request->input('published'), FILTER_VALIDATE_BOOLEAN),
             'meta_title' => $request->input('meta_title'),
+            'image' => $image_url,
         ];
-
-
         $image = $request->image;
         if ($image) {
             $extension = $image->getClientOriginalExtension();
@@ -108,7 +108,6 @@ class ArticleRepository implements ArticleInterface
         } else {
             $image_url = '';
         }
-
         // Category
         $article->categories()->detach();
         $article->categories()->sync([$request->input('categories')]);
@@ -132,10 +131,6 @@ class ArticleRepository implements ArticleInterface
     public function delete(int $id)
     {
         $article = Article::findOrFail($id);
-        File::delete($article->image);
-        $article->categories()->detach();
-        $article->keywords()->detach();
-
         return $article->delete();
     }
 
@@ -170,7 +165,6 @@ class ArticleRepository implements ArticleInterface
 
     public function paginateByCategoryWithFilter(int $perPage)
     {
-        return $this->model
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
             ->latest()
             ->paginate($perPage);
@@ -188,6 +182,13 @@ class ArticleRepository implements ArticleInterface
         return Article::all()->count();
     }
 
+    public function SetVisitor()   {
+        $ip = request()->ip();
+        $visited_date = Carbon::now();
+        $visitor = Visitor::firstOrCreate(['ip' => $ip], ['visit_date' => $visited_date]);
+        $visitor->increment('hits');
+        $visitor->increment('lastDayRecord');
+
 
     private function baseQuery(int $categoryId = 1)
     {
@@ -201,8 +202,6 @@ class ArticleRepository implements ArticleInterface
 
     public function publishedArticles(int $limit)
     {
-        return $this->model
-            ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
             ->with('categories')
             ->latest()
             ->limit($limit)
@@ -211,7 +210,6 @@ class ArticleRepository implements ArticleInterface
 
     public function publishedFeaturedArticles(int $limit)
     {
-        return $this->model
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
             ->where('featured', 1)
             ->latest()
@@ -221,7 +219,6 @@ class ArticleRepository implements ArticleInterface
 
     public function mostReadArticles(int $limit)
     {
-        return $this->model
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
             ->limit($limit)
             ->orderBy('viewed', 'desc')
@@ -242,7 +239,7 @@ class ArticleRepository implements ArticleInterface
 
     public function getSimilarArticles($limit)
     {
-        return $this->model
+
             ->select('id', 'title', 'slug', 'published', 'viewed', 'image', 'featured', 'description')
             ->inRandomOrder()
             ->limit($limit)
@@ -250,8 +247,7 @@ class ArticleRepository implements ArticleInterface
     }
 
     public function searchArticles($query, $perPage)
-    {
-        return $this->model
+
             ->select('id', 'title', 'slug', 'published', 'viewed', 'image', 'featured', 'description')
             ->where('title', 'LIKE', '%' . $query . '%')
             ->latest()
@@ -261,7 +257,7 @@ class ArticleRepository implements ArticleInterface
 
     public function getAllTags()
     {
-        return Keyword::limit(15)->inRandomOrder()->get();
+
     }
 
     public function getTagInfoWithArticles($tag, $perPage): array
@@ -271,9 +267,7 @@ class ArticleRepository implements ArticleInterface
         $tags = Keyword::all();
 
         return [
-            'tagInfo' => $tag,
-            'tags' => $tags,
-            'articles' => $this->getArticlesByTag($perPage, $tag->pluck('id')->toArray())
+
         ];
     }
 

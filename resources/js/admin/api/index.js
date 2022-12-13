@@ -69,7 +69,6 @@ class HttpClient {
 
     formBody(data) {
         this.formData = data
-
         return this
     }
 

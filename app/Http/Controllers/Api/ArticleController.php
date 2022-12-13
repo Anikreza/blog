@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Article;
+use App\Models\Visitor;
 use App\Repositories\Article\ArticleRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -25,14 +26,29 @@ class ArticleController extends ApiController
 
     public function index(Request $request)
     {
-        $all= $this->successResponse($this->articleRepository->paginate(10), true);
+
+        $allArticles= $this->successResponse($this->articleRepository->paginate(10), true);
         $count= $this->successResponse($this->articleRepository->getArticleCount(), true);
+        $hitsPerUser= $this->successResponse($this->articleRepository->getUniqueVisitorCount(), true);
+        $hits= $this->successResponse($this->articleRepository->getTotalVisitCount(), true);
+        $hitsLastDay= $this->successResponse($this->articleRepository->getLastDaysTotalVisitCount(), true);
+        $hitsPerUserLastWeek= $this->successResponse($this->articleRepository->getLastWeeksUniqueVisitorCount(), true);
+        $categoryCount= $this->successResponse($this->articleRepository->getCategoriesCount(), true);
+        $hitsPerDayLastWeek= $this->successResponse($this->articleRepository->getLastWeeksVisitCountByDay(), true);
         $AllCount= $this->successResponse($this->articleRepository->getAllArticleCount(), true);
+
         $response = [
-            'all' => $all,
-            'count'=>$count,
-            'allCount'=>$AllCount,
+            'all' => $allArticles,
+            'countInLastDay'=>$count,
+            'allArticleCount'=>$AllCount,
+            'allTimeUniqueVisitors'=>$hitsPerUser,
+            'LastWeeksUniqueVisitors'=>$hitsPerUserLastWeek,
+            'totalVisits'=>$hits,
+            'totalVisitsLastDay'=>$hitsLastDay,
+            'categoryCount'=>$categoryCount,
+            'hitsPerDayLastWeek'=>$hitsPerDayLastWeek
         ];
+
         return response($response, 201);
     }
 

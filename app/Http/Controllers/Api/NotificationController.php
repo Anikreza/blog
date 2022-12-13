@@ -28,7 +28,7 @@ class NotificationController extends Controller
                 "article_id" => $article->id,
                 "title" => $article->title,
                 "body" => $article->excerpt,
-                "image" => $article->thumb_image_url
+                "image" => $article->image
             ]
         ]);
     }

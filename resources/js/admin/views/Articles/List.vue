@@ -83,7 +83,7 @@
                                                  style="border-radius: 10px">
                                         </span>
                                         <span v-if="article.published">
-                                            <a  :href="`/${article.slug}`" target="_blank">{{ article.title }}</a>
+                                            <a  :href="`/articles/${article.slug}`" target="_blank">{{ article.title }}</a>
                                         </span>
                                         <span v-else>
                                             {{ article.title }}

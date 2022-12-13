@@ -353,7 +353,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       dailySalesChart: {
         data: {
           labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-          series: [[12, 17, 7, 17, 23, 18, 38]]
+          series: [[this.dailyData]]
         },
         options: {
           lineSmooth: this.$chartist.Interpolation.cardinal({
@@ -424,7 +424,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         2: false
       },
       articleCountInLastDay: 0,
-      allArticleCount: 0
+      allArticleCount: 0,
+      visitors: 0,
+      visitorsInLastWeek: 0,
+      totalVisitsInLastDay: 0,
+      totalVisitsAllTime: 0,
+      categories: 0,
+      dailyData: []
     };
   },
   methods: {
@@ -436,12 +442,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       this.loading = true;
       _api_resources_article__WEBPACK_IMPORTED_MODULE_6__.default.ArticleCount().then(function (res) {
-        console.log('count', res.data.allCount.original.data);
-        _this.articleCountInLastDay = res.data.count.original.data;
-        _this.allArticleCount = res.data.allCount.original.data;
+        console.log('count', res.data.hitsPerDayLastWeek.original.data);
+        _this.articleCountInLastDay = res.data.countInLastDay.original.data;
+        _this.allArticleCount = res.data.allArticleCount.original.data;
+        _this.visitors = res.data.allTimeUniqueVisitors.original.data;
+        _this.visitorsInLastWeek = res.data.LastWeeksUniqueVisitors.original.data;
+        _this.totalVisitsAllTime = res.data.totalVisits.original.data;
+        _this.totalVisitsInLastDay = res.data.totalVisitsLastDay.original.data;
+        _this.categories = res.data.categoryCount.original.data;
+        _this.dailyData = res.data.hitsPerDayLastWeek.original.data;
         _this.loading = false;
       })["catch"](function (err) {
         _this.loading = false;
+      })["finally"](function () {
+        console.log('again', _this.dailyData[0].visits);
       });
     }
   },
@@ -899,7 +913,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     options: {
-      type: Object,
+      type: Array,
       "default": function _default() {
         return {};
       }
@@ -1072,18 +1086,18 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-var CategoryApi = /*#__PURE__*/function (_HttpClient) {
-  _inherits(CategoryApi, _HttpClient);
+var ArticleApi = /*#__PURE__*/function (_HttpClient) {
+  _inherits(ArticleApi, _HttpClient);
 
-  var _super = _createSuper(CategoryApi);
+  var _super = _createSuper(ArticleApi);
 
-  function CategoryApi() {
-    _classCallCheck(this, CategoryApi);
+  function ArticleApi() {
+    _classCallCheck(this, ArticleApi);
 
     return _super.apply(this, arguments);
   }
 
-  _createClass(CategoryApi, [{
+  _createClass(ArticleApi, [{
     key: "list",
     value: function list() {
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
@@ -1093,7 +1107,7 @@ var CategoryApi = /*#__PURE__*/function (_HttpClient) {
   }, {
     key: "ArticleCount",
     value: function ArticleCount() {
-      return this.requestType('get').request("/articles");
+      return this.requestType('get').request("articles");
     }
   }, {
     key: "get",
@@ -1129,10 +1143,10 @@ var CategoryApi = /*#__PURE__*/function (_HttpClient) {
     }
   }]);
 
-  return CategoryApi;
+  return ArticleApi;
 }(_index__WEBPACK_IMPORTED_MODULE_0__.default);
 
-var Api = new CategoryApi();
+var Api = new ArticleApi();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Api);
 
 /***/ }),
@@ -7718,11 +7732,12 @@ var render = function() {
                 attrs: {
                   color: _vm.$store.state.app.color,
                   icon: "mdi-account-group",
-                  title: "Total Visit This Month",
-                  value: "60000",
+                  title: "  Total Visits",
+                  value: _vm.totalVisitsAllTime,
                   "sub-icon": "mdi-account-check",
                   "sub-icon-color": "success",
-                  "sub-text": "2500 people visited in last 24 hours"
+                  "sub-text":
+                    _vm.totalVisitsInLastDay + "  Visits in last 24 hours"
                 }
               })
             ],
@@ -7738,9 +7753,9 @@ var render = function() {
                   color: _vm.$store.state.app.color,
                   icon: "mdi-tag-multiple",
                   title: "Total Categories",
-                  value: "6",
+                  value: _vm.categories,
                   "sub-icon": "mdi-video",
-                  "sub-text": "7 Video published"
+                  "sub-text": "0 Video published"
                 }
               })
             ],
@@ -7756,9 +7771,10 @@ var render = function() {
                   color: _vm.$store.state.app.color,
                   icon: "mdi-account-multiple-check ",
                   title: "Unique User Visited",
-                  value: "51550",
+                  value: _vm.visitors,
                   "sub-icon": "mdi-update",
-                  "sub-text": "41 unique user in last 7 days"
+                  "sub-text":
+                    _vm.visitorsInLastWeek + " Unique users in last week"
                 }
               })
             ],

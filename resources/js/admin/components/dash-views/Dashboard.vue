@@ -126,11 +126,11 @@
                 <material-stats-card
                     :color="$store.state.app.color"
                     icon="mdi-account-group"
-                    :title="`Total Visit This Month`"
-                    value="60000"
+                    :title="`  Total Visits`"
+                    :value=totalVisitsAllTime
                     sub-icon="mdi-account-check"
                     sub-icon-color="success"
-                    :sub-text="`2500 people visited in last 24 hours`"
+                    :sub-text= "totalVisitsInLastDay+'  Visits in last 24 hours'"
                 />
             </v-flex>
             <v-flex
@@ -143,9 +143,9 @@
                     :color="$store.state.app.color"
                     icon="mdi-tag-multiple"
                     :title="`Total Categories`"
-                    value="6"
+                    :value=categories
                     sub-icon="mdi-video"
-                    :sub-text="`7 Video published`"
+                    :sub-text="`0 Video published`"
                 />
             </v-flex>
             <v-flex
@@ -158,9 +158,9 @@
                     :color="$store.state.app.color"
                     icon="mdi-account-multiple-check "
                     :title="`Unique User Visited`"
-                    value="51550"
+                    :value=visitors
                     sub-icon="mdi-update"
-                    :sub-text="`41 unique user in last 7 days`"
+                    :sub-text= "visitorsInLastWeek+' Unique users in last week'"
                 />
             </v-flex>
             <v-flex
@@ -320,13 +320,15 @@ export default {
     components: {
         MaterialCard, MaterialChartCard, MaterialStatsCard, SimpleTable
     },
-    data() {
+     data() {
         return {
             dailySalesChart: {
                 data: {
                     labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
                     series: [
-                        [12, 17, 7, 17, 23, 18, 38]
+                        [
+                            this.dailyData
+                        ]
                     ]
                 },
                 options: {
@@ -369,7 +371,6 @@ export default {
                     labels: ['Ja', 'Fe', 'Ma', 'Ap', 'Mai', 'Ju', 'Jul', 'Au', 'Se', 'Oc', 'No', 'De'],
                     series: [
                         [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
-
                     ]
                 },
                 options: {
@@ -402,8 +403,14 @@ export default {
                 1: false,
                 2: false
             },
-            articleCountInLastDay:0,
-            allArticleCount:0,
+            articleCountInLastDay: 0,
+            allArticleCount: 0,
+            visitors: 0,
+            visitorsInLastWeek: 0,
+            totalVisitsInLastDay: 0,
+            totalVisitsAllTime: 0,
+            categories: 0,
+            dailyData: [],
         }
     },
 
@@ -414,12 +421,20 @@ export default {
         getCount(){
             this.loading = true;
             Api.ArticleCount().then(res=>{
-                console.log('count',res.data.allCount.original.data)
-                this.articleCountInLastDay=res.data.count.original.data;
-                this.allArticleCount=res.data.allCount.original.data;
+                console.log('count',res.data.hitsPerDayLastWeek.original.data)
+                this.articleCountInLastDay=res.data.countInLastDay.original.data;
+                this.allArticleCount=res.data.allArticleCount.original.data;
+                this.visitors=res.data.allTimeUniqueVisitors.original.data;
+                this.visitorsInLastWeek=res.data.LastWeeksUniqueVisitors.original.data;
+                this.totalVisitsAllTime=res.data.totalVisits.original.data;
+                this.totalVisitsInLastDay=res.data.totalVisitsLastDay.original.data;
+                this.categories=res.data.categoryCount.original.data;
+                this.dailyData=res.data.hitsPerDayLastWeek.original.data;
                 this.loading=false;
             }).catch(err => {
                 this.loading = false;
+            }).finally(()=>{
+                console.log('again',this.dailyData[0].visits)
             })
         },
     },

@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 ;
 
 use App\Models\Category;
-
-//use App\Models\Page;
 use App\Models\Page;
 use App\Models\PageLink;
+use App\Models\Visitor;
+
 use App\Repositories\Article\ArticleRepository;
 use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
@@ -36,33 +36,25 @@ class WebsiteController extends Controller
      */
     public function __construct(ArticleRepository $articleRepository)
     {
-        $this->articleRepository = $articleRepository;
-        $tags = $this->articleRepository->getAllTags();
-        $tagTitles=[];
-        foreach ($tags as $tag)
-            array_push($tagTitles,$tag->title);
-        $categories = Category::select('name', 'slug')->where('is_published', 0)->orderBy('position', 'asc')->pluck('name', 'slug');
-        $featuredArticles = $this->articleRepository->publishedArticles( 3);
         $this->homePageSeoData = json_decode(setting()->get('general'), true);
         $this->baseSeoData = [
-            'title' => 'A travel blog site',
-            'description' => 'A travel blog site',
-            'keywords' => $tagTitles,
-
-//            'image' => $this->homePageSeoData['home_page_image_url'] ?
-//                Storage::disk('public')->url('settings/' . basename($this->homePageSeoData['home_page_image_url']))
-//                :
-//                asset('asset/logo.png'),
+            'title' => $this->homePageSeoData['home_page_title'],
+            'description' => $this->homePageSeoData['home_page_description'],
+            'keywords' => $this->homePageSeoData['home_page_keywords'],
+            'image' => $this->homePageSeoData['home_page_image_url'] ?
+                Storage::disk('public')->url('settings/' . basename($this->homePageSeoData['home_page_image_url']))
+                :
+                asset('asset/logo.png'),
             'type' => 'website',
             'site' => env('APP_URL'),
-            'app_name' => env('APP_NAME'),
+            'app_name' => $this->homePageSeoData['app_name'],
             'robots' => 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
         ];
+
 
         $footerPages = \Cache::remember('footer_pages', config('cache.default_ttl'), function () {
             return PageLink::where('key', 'footer_pages')->with('page:id,title,slug')->get()->toArray();
         });
-
         view()->share('footerPages', $footerPages);
         view()->share('categories', $categories);
         view()->share('tags', $tags);
@@ -71,10 +63,6 @@ class WebsiteController extends Controller
 
     public function index()
     {
-        $publishedArticles = $this->articleRepository->publishedArticles( 4);
-        $featuredArticles = $this->articleRepository->publishedFeaturedArticles( 3);
-        $mostReadArticles = $this->articleRepository->mostReadArticles( 3);
-
         $this->seo($this->baseSeoData);
 
         return view('pages.home.index',
@@ -88,7 +76,6 @@ class WebsiteController extends Controller
 
     public function articleDetails($slug)
     {
-        $article = $this->articleRepository->getArticle($slug);
         if (!$article) {
             return $this->renderPage($slug);
         }
@@ -118,9 +105,7 @@ class WebsiteController extends Controller
         $this->baseSeoData['title'] = " $article->title | $appName";
         $this->baseSeoData['keywords'] = $tagTitles;
         $this->seo($this->baseSeoData);
-
         $shareLinks = $this->getSeoLinksForDetailsPage($article);
-        return view('pages.articleDetail.index', compact('article', 'similarArticles', 'category', 'segments','shareLinks'));
     }
 
     public function categoryDetails($slug)
@@ -164,7 +149,7 @@ class WebsiteController extends Controller
 
         // SEO META INFO
         if ($tag->title == 'XYZs column') {
-            $this->baseSeoData['title'] = "Demo blogsite Travel blog etc | {$this->baseSeoData['app_name']}";
+            $this->baseSeoData['title'] = "Demo blogsite Travel blog | {$this->baseSeoData['app_name']}";
             $this->baseSeoData['description'] = "here, you will find blogs describing cultures, ethnicity and politics around the world";
         } else {
             $this->baseSeoData['title'] = "{$tag->title} | {$this->baseSeoData['app_name']}";
@@ -191,6 +176,28 @@ class WebsiteController extends Controller
 
         return view('pages.search.index', compact('segments', 'searchTerm', 'searchedArticles'));
     }
+    {
+        $page = Page::where('slug', $slug)->with('keywords')->first();
+
+        if (!$page) {
+            abort(404);
+        }
+
+        //visitor count
+        $cacheKey = request()->ip() . $slug;
+        \Cache::remember($cacheKey, 60, function () use ($page) {
+            $page->viewed = $page->viewed + 1;
+            $page->save();
+            return true;
+        });
+
+        $segments = [
+            ['name' => $page['title'], 'url' => url($slug)]
+        ];
+        $shareLinks = $this->getSeoLinksForDetailsPage($page);
+
+        return view('pages.page-details.index', compact('page', 'segments', 'shareLinks'));
+    }
 
     private function generatePageClass($title): \stdClass
     {
@@ -199,15 +206,25 @@ class WebsiteController extends Controller
         $page->excerpt = null;
         $page->keywords = [];
         $page->image_url = null;
-
         return $page;
+    }
+
+    public function getColumnistPage()
+    {
+        $page = $this->generatePageClass('Columnist');
+        $segments = [
+            ['name' => $page->title, 'url' => url('Columnist')]
+        ];
+        $shareLinks = $this->getSeoLinksForDetailsPage($page);
+
+        return view('pages.columnist.index', compact('page', 'segments', 'shareLinks'));
     }
 
     private function getSeoLinksForDetailsPage($data)
     {
         $this->baseSeoData = [
             'title' => $data->title . " | {$this->baseSeoData['app_name']}",
-            'description' => count($data->keywords)? $data->excerpt : $this->baseSeoData['description'],
+            'description' => $data->excerpt,
             'keywords' => count($data->keywords) ? implode(", ", $data->keywords->pluck('title')->toArray()) : $this->baseSeoData['keywords'],
             'image' => $data->image_url,
             'type' => 'article',
@@ -226,106 +243,6 @@ class WebsiteController extends Controller
             ->getRawLinks();
     }
 
-    public function renderPage($slug)
-    {
-        $page = Page::where('slug', $slug)->with('keywords')->first();
-
-        if (!$page) {
-            abort(404);
-        }
-
-        $cacheKey = request()->ip() . $slug;
-        \Cache::remember($cacheKey, 60, function () use ($page) {
-            $page->viewed = $page->viewed + 1;
-            $page->save();
-            return true;
-        });
-
-        $segments = [
-            ['name' => $page['title'], 'url' => url($slug)]
-        ];
-
-        return view('pages.pageDetails.index', compact('page', 'segments'));
-    }
-
-    public function getColumnistPage()
-    {
-        $page = $this->generatePageClass('Columnist');
-
-        $segments = [
-            ['name' => $page->title, 'url' => url('Columnist')]
-        ];
-
-        $shareLinks = $this->getSeoLinksForDetailsPage($page);
-        return view('pages.columnist.index', compact('page', 'segments', 'shareLinks'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
     private function seo($data)
     {
         SEOMeta::setTitle($data['title'], false);
@@ -339,11 +256,11 @@ class WebsiteController extends Controller
         OpenGraph::setTitle($data['title']); // define title
         OpenGraph::setDescription($data['description']);  // define description
 
-//        if ($data['image']) {
-//            OpenGraph::addImage($data['image']); // add image url
-//        } else {
-//            OpenGraph::addImage($this->homePageSeoData['home_page_image_url']); // add image url
-//        }
+        if ($data['image']) {
+            OpenGraph::addImage($data['image']); // add image url
+        } else {
+            OpenGraph::addImage($this->homePageSeoData['home_page_image_url']); // add image url
+        }
 
         OpenGraph::setUrl(url()->current()); // define url
         OpenGraph::setSiteName($data['app_name']); //define site_name
@@ -352,11 +269,11 @@ class WebsiteController extends Controller
         TwitterCard::setTitle($data['title']); // title of twitter card tag
         TwitterCard::setDescription($data['description']); // description of twitter card tag
 
-//        if ($data['image']) {
-//            TwitterCard::setImage($data['image']); // add image url
-//        } else {
-//            TwitterCard::setImage($this->homePageSeoData['home_page_image_url']); // add image url
-//        }
+        if ($data['image']) {
+            TwitterCard::setImage($data['image']); // add image url
+        } else {
+            TwitterCard::setImage($this->homePageSeoData['home_page_image_url']); // add image url
+        }
 
         TwitterCard::setSite($data['site']); // site of twitter card tag
         TwitterCard::setUrl(url()->current()); // url of twitter card tag
@@ -370,13 +287,13 @@ class WebsiteController extends Controller
         JsonLd::setType($data['type']); // type of twitter card tag
         JsonLd::setTitle($data['title']); // title of twitter card tag
         JsonLd::setDescription($data['description']); // description of twitter card tag
-//
-//        if ($data['image']) {
-//
-//         JsonLd::setImage($data['image']); // add image url
-//        } else {
-//            JsonLd::setImage($this->homePageSeoData['home_page_image_url']); // add image url
-//        }
+
+        if ($data['image']) {
+
+         JsonLd::setImage($data['image']); // add image url
+        } else {
+            JsonLd::setImage($this->homePageSeoData['home_page_image_url']); // add image url
+        }
         JsonLd::setSite('@DemoBlog'); // site of twitter card tag
         JsonLd::setUrl(url()->current()); // url of twitter card tag
     }
