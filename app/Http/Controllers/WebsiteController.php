@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Page;
 use App\Models\PageLink;
 use App\Models\Visitor;
+
 use App\Repositories\Article\ArticleRepository;
 use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
@@ -50,13 +51,7 @@ class WebsiteController extends Controller
             'robots' => 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
         ];
 
-        $this->articleRepository = $articleRepository;
-        $tags = $this->articleRepository->getAllTags();
-//        $tagTitles=[];
-//        foreach ($tags as $tag)
-//            array_push($tagTitles,$tag->title);
-        $categories = Category::select('name', 'slug')->where('is_published', 0)->orderBy('position', 'asc')->pluck('name', 'slug');
-        $featuredArticles = $this->articleRepository->publishedArticles(1, 3);
+
         $footerPages = \Cache::remember('footer_pages', config('cache.default_ttl'), function () {
             return PageLink::where('key', 'footer_pages')->with('page:id,title,slug')->get()->toArray();
         });
@@ -68,12 +63,6 @@ class WebsiteController extends Controller
 
     public function index()
     {
-
-        $this->articleRepository->SetVisitor();
-        $publishedArticles = $this->articleRepository->publishedArticles(1, 4);
-        $featuredArticles = $this->articleRepository->publishedFeaturedArticles(1, 3);
-        $mostReadArticles = $this->articleRepository->mostReadArticles(1, 3);
-
         $this->seo($this->baseSeoData);
 
         return view('pages.home.index',
@@ -87,12 +76,11 @@ class WebsiteController extends Controller
 
     public function articleDetails($slug)
     {
-        $article = $this->articleRepository->getArticle($slug, true);
         if (!$article) {
             return $this->renderPage($slug);
         }
         $category = $article['categories'][0];
-        $similarArticles = $this->articleRepository->getSimilarArticles($category['id'], 2);
+        $similarArticles = $this->articleRepository->getSimilarArticles( 2);
         $tags = $article->keywords;
         $tagTitles=[];
         foreach ($tags as $tag)
@@ -114,12 +102,10 @@ class WebsiteController extends Controller
         });
 
         $appName = env('APP_NAME');
-        $this->baseSeoData['title'] = " $article->title - $appName";
+        $this->baseSeoData['title'] = " $article->title | $appName";
         $this->baseSeoData['keywords'] = $tagTitles;
         $this->seo($this->baseSeoData);
         $shareLinks = $this->getSeoLinksForDetailsPage($article);
-
-        return view('pages.articleDetail.index', compact('article', 'shareLinks','similarArticles', 'category', 'segments'));
     }
 
     public function categoryDetails($slug)
@@ -131,7 +117,7 @@ class WebsiteController extends Controller
                 'url' => route('category', ['slug' => $category->slug])
             ],
         ];
-        $categoryArticles = $this->articleRepository->paginateByCategoryWithFilter(5, $category->id);
+        $categoryArticles = $this->articleRepository->paginateByCategoryWithFilter(5);
 
         // SEO META INFO
 //        $name = empty($category->meta_title) ? $category->name : $category->meta_title;
@@ -170,7 +156,6 @@ class WebsiteController extends Controller
         }
 
         $this->seo($this->baseSeoData);
-
         view()->share('tags', $tags);
         return view('pages.tag.index', compact('segments', 'tag', 'tagArticles'));
     }
@@ -191,7 +176,6 @@ class WebsiteController extends Controller
 
         return view('pages.search.index', compact('segments', 'searchTerm', 'searchedArticles'));
     }
-    public function renderPage($slug)
     {
         $page = Page::where('slug', $slug)->with('keywords')->first();
 

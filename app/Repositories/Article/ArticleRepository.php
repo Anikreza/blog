@@ -36,7 +36,7 @@ class ArticleRepository implements ArticleInterface
             $upload_path = 'assets/images/';
             $image_url = $upload_path . $image_full_name;
 
-            $success = $image->move($upload_path, $image_full_name);
+            $image->move($upload_path, $image_full_name);
         } else {
             $image_url = '';
         }
@@ -47,7 +47,7 @@ class ArticleRepository implements ArticleInterface
             'slug' => $this->slugify($request->input('title')),
             'excerpt' => $request->input('excerpt'),
             'featured' => filter_var($request->input('featured'), FILTER_VALIDATE_BOOLEAN),
-            'description' => $request->input('description'),
+            'description' => saveTextEditorImage($request->input('description')),
             'published' => filter_var($request->input('published'), FILTER_VALIDATE_BOOLEAN),
             'image_disk' => $this->disk,
             'meta_title' => $request->input('meta_title'),
@@ -66,7 +66,6 @@ class ArticleRepository implements ArticleInterface
         }
 
         $article->keywords()->sync($keywordIds);
-
         return $article;
     }
 
@@ -79,30 +78,36 @@ class ArticleRepository implements ArticleInterface
     {
         $article = Article::findOrFail($id);
         $isPublishedBefore = $article->published;
-
-        $image = $request->image;
-        if ($image) {
-            $image_ext = $image->getClientOriginalExtension();
-            $image_full_name = time() . '.' . $image_ext;
-            $upload_path = 'assets/images/';
-            $image_url = $upload_path . $image_full_name;
-
-            $success = $image->move($upload_path, $image_full_name);
-        } else {
-            $image_url = '';
-        }
-
         $data = [
             'title' => $request->input('title'),
             'slug' => $this->slugify($request->input('title')),
             'excerpt' => $request->input('excerpt'),
             'featured' => filter_var($request->input('featured'), FILTER_VALIDATE_BOOLEAN),
-            'description' => $request->input('description'),
+            'description' => saveTextEditorImage($request->input('description')),
             'published' => filter_var($request->input('published'), FILTER_VALIDATE_BOOLEAN),
             'meta_title' => $request->input('meta_title'),
             'image' => $image_url,
         ];
+        $image = $request->image;
+        if ($image) {
+            $extension = $image->getClientOriginalExtension();
 
+            $image_full_name = time() . '.' . $extension;
+            $upload_path = public_path('assets/images/');
+            $image_url = $upload_path . $image_full_name;
+            $data['image'] = $image_url;
+            $image->move($upload_path, $image_full_name);
+            Image::make($image)->resize(null, 675, function ($constraint) {
+                $constraint->aspectRatio();
+            })->encode($extension)
+                ->save($upload_path . $data['image']);
+            Image::make($image)->resize(null, 200, function ($constraint) {
+                $constraint->aspectRatio();
+            })->encode($extension)
+                ->save($upload_path . $data['image']);
+        } else {
+            $image_url = '';
+        }
         // Category
         $article->categories()->detach();
         $article->categories()->sync([$request->input('categories')]);
@@ -126,12 +131,6 @@ class ArticleRepository implements ArticleInterface
     public function delete(int $id)
     {
         $article = Article::findOrFail($id);
-        if (File::exists($article->image)) {
-            File::delete($article->image);
-        }
-        $article->categories()->detach();
-        $article->keywords()->detach();
-
         return $article->delete();
     }
 
@@ -164,9 +163,8 @@ class ArticleRepository implements ArticleInterface
         // TODO: Implement paginateWithFilter() method.
     }
 
-    public function paginateByCategoryWithFilter(int $perPage, int $categoryId)
+    public function paginateByCategoryWithFilter(int $perPage)
     {
-        return $this->baseQuery($categoryId)
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
             ->latest()
             ->paginate($perPage);
@@ -191,54 +189,6 @@ class ArticleRepository implements ArticleInterface
         $visitor->increment('hits');
         $visitor->increment('lastDayRecord');
 
-        Visitor::where('visit_date', '<', Carbon::now()->subDays(1))
-            ->update(['lastDayRecord' => 0]);
-
-        Visitor::where('created_at', '<', Carbon::now()->subDays(1))
-            ->update(['visit_date' => Carbon::now(), 'created_at' => Carbon::now()]);
-
-
-    }
-
-    public function getTotalVisitCount(): int
-    {
-        return Visitor::sum('hits');
-    }
-
-    public function getLastDaysTotalVisitCount(): int
-    {
-        return Visitor::where('updated_at', '>', Carbon::now()->subDays(1))
-            ->sum('lastDayRecord');
-    }
-
-    public function getUniqueVisitorCount(): int
-    {
-        return Visitor::all()->count();
-    }
-
-    public function getLastWeeksUniqueVisitorCount()
-    {
-        return Visitor::where('updated_at', '>', Carbon::now()->subDays(7))
-            ->count('id');
-    }
-
-    public function getLastWeeksVisitCountByDay()
-    {
-        //
-//        $visitorsPerDay = [];
-//        foreach ($data as $key=>$item) {
-//            $visitorsPerDay[] = $item->visits;
-//        }
-        return Visitor::select(DB::raw('sum(hits) as visits'))
-            ->where('visit_date', ">", DB::raw('NOW() - INTERVAL 1 WEEK'))
-            ->groupBy('visit_date')
-            ->get();
-    }
-
-    public function getCategoriesCount(): int
-    {
-        return Category::all()->count();
-    }
 
     private function baseQuery(int $categoryId = 1)
     {
@@ -250,20 +200,16 @@ class ArticleRepository implements ArticleInterface
         });
     }
 
-    public function publishedArticles(int $categoryId, int $limit)
+    public function publishedArticles(int $limit)
     {
-        return $this->baseQuery($categoryId)
-            ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
-            ->with('favorites')
             ->with('categories')
             ->latest()
             ->limit($limit)
             ->get();
     }
 
-    public function publishedFeaturedArticles(int $categoryId, int $limit)
+    public function publishedFeaturedArticles(int $limit)
     {
-        return $this->baseQuery($categoryId)
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
             ->where('featured', 1)
             ->latest()
@@ -271,46 +217,29 @@ class ArticleRepository implements ArticleInterface
             ->get();
     }
 
-    public function mostReadArticles(int $categoryId, int $limit)
+    public function mostReadArticles(int $limit)
     {
-        return $this->baseQuery($categoryId)
             ->select('id', 'title', 'slug', 'featured', 'published', 'image', 'viewed', 'description')
             ->limit($limit)
             ->orderBy('viewed', 'desc')
             ->get();
     }
 
-    public function getArticle($condition, $isSlug = false)
+    public function getArticle($slug)
     {
-        return $this->model->with(['categories' => function ($q) use ($condition, $isSlug) {
-            $q->with(['articles' => function ($sq) use ($condition, $isSlug) {
+        return $this->model->with(['categories' => function ($q) use ($slug) {
+            $q->with(['articles' => function ($sq) use ($slug) {
                 $sq->select('article_id', 'title', 'slug', 'published', 'viewed', 'image', 'featured', 'description')
-                    ->with('favorites')
-                    ->where('published', '=', true)
-                    ->when($isSlug, function ($s) use ($condition, $isSlug) {
-                        $s->where('slug', '!=', $condition);
-                    })
-                    ->when(!$isSlug, function ($s) use ($condition, $isSlug) {
-                        $s->where('article_id', '!=', $condition);
-                    })
-                    ->inRandomOrder()
-                    ->limit(4);
+                    ->where('published', '=', true);
             }]);
         }])
-            ->with(['keywords', 'favorites'])
-            ->where('published', true)
-            ->when($isSlug, function ($q) use ($condition) {
-                $q->where('slug', $condition);
-            })
-            ->when(!$isSlug, function ($q) use ($condition) {
-                $q->where('id', $condition);
-            })
+            ->where('slug', $slug)
             ->first();
     }
 
-    public function getSimilarArticles($categoryId, $limit)
+    public function getSimilarArticles($limit)
     {
-        return $this->baseQuery($categoryId)
+
             ->select('id', 'title', 'slug', 'published', 'viewed', 'image', 'featured', 'description')
             ->inRandomOrder()
             ->limit($limit)
@@ -318,8 +247,7 @@ class ArticleRepository implements ArticleInterface
     }
 
     public function searchArticles($query, $perPage)
-    {
-        return $this->baseQuery(1)
+
             ->select('id', 'title', 'slug', 'published', 'viewed', 'image', 'featured', 'description')
             ->where('title', 'LIKE', '%' . $query . '%')
             ->latest()
@@ -329,19 +257,17 @@ class ArticleRepository implements ArticleInterface
 
     public function getAllTags()
     {
-        return Keyword::all();
+
     }
 
-    public function getTagInfoWithArticles($tag, $perPage, $includeFavorites = false): array
+    public function getTagInfoWithArticles($tag, $perPage): array
     {
         $string = Str::title(str_replace('-', ' ', trim($tag)));
-        $tag = Keyword::where('title', 'LIKE', '%' . $string . '%')->get();
+        $tag = Keyword::where('title', 'LIKE', '%' . $string . '%')->first();
         $tags = Keyword::all();
 
         return [
-            'tagInfo' => count($tag) ? $tag[0] : null,
-            'tags' => count($tags) ? $tags : null,
-            'articles' => count($tag) ? $this->getArticlesByTag($perPage, $tag->pluck('id')->toArray(), $includeFavorites) : []
+
         ];
     }
 

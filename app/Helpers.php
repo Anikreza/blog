@@ -29,9 +29,6 @@ function saveTextEditorImage($detail)
     $dom = new \domdocument();
     @$dom->loadHtml(mb_convert_encoding($detail, 'HTML-ENTITIES', 'UTF-8'));
     $images = $dom->getelementsbytagname('img');
-
-    if (!File::exists(public_path('/uploads/'))) {
-        File::makeDirectory(public_path() . '/' . '/uploads/', 0777, true, true);
     }
     foreach ($images as $k => $img) {
         $data = $img->getattribute('src');
@@ -47,6 +44,7 @@ function saveTextEditorImage($detail)
         file_put_contents($path, $data);
         $img->removeattribute('src');
         $img->setattribute('src', asset('/uploads/' . $image_name));
+
     }
 
     return $detail = $dom->savehtml();

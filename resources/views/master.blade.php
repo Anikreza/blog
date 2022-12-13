@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/theme.css?ver=141') }}" >
 </head>
 
-<body class="body-wider">
+<body class="body-wider" >
 @include('layouts.navbar')
 <div  style="background: linear-gradient(180deg,#ffffff,#cce0d0,#ffffff) ">
     @yield('content')

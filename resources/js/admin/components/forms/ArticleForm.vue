@@ -56,19 +56,17 @@
 <!--                        </v-col>-->
 
                         <v-col cols="12" md="12">
-                            <VTextAreaFieldWithValidation
-                                v-if="form.is_video"
-                                v-model="form.description"
-                                :rules="{required: true, regex: /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]{10}).\b/}"
-                                ref="description"
-                                rows="2"
-                                field="youtube_link"
-                                :label="'Youtube Link*'"
-                                hint="Paste youtube link here.."/>
-
+<!--                            <VTextAreaFieldWithValidation-->
+<!--                                v-if="form.is_video"-->
+<!--                                v-model="form.description"-->
+<!--                                :rules="{required: true, regex: /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]{10}).\b/}"-->
+<!--                                ref="description"-->
+<!--                                rows="2"-->
+<!--                                field="youtube_link"-->
+<!--                                :label="'Youtube Link*'"-->
+<!--                                hint="Paste youtube link here.."/>-->
 
                             <vue-editor id="editor"
-                                        v-if="!form.is_video"
                                         :editorOptions="editorConfig"
                                         v-model="form.description"/>
                         </v-col>
@@ -98,7 +96,7 @@
                         <v-col cols="12" md="12">
                             <VFileInputWithValidation v-model="form.image"
                                                       :image-url="form.image_url"
-                                                      :rules="!articleKey ? `required` : ''"
+                                                      :rules="articleKey ? `required` : ''"
                                                       ref="image"
                                                       field="image"
                                                       :label="form.is_video ? 'Poster*' : 'Image*'"/>
@@ -183,7 +181,6 @@ export default {
                 categories: '',
                 excerpt: '',
                 meta_title: '',
-                read_time: 3,
                 published: 1,
                 featured: 0,
                 description: '',
@@ -210,7 +207,6 @@ export default {
         async get() {
             this.loading = true;
             articleApi.get(this.articleKey).then(res => {
-                res.data.data.read_time = parseInt(res.data.data.read_time)
                 res.data.data.image = null;
 
 

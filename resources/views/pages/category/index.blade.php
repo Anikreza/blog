@@ -1,6 +1,6 @@
 @extends('master')
 @section('content')
-<body class="body-wider">
+<body class="body-wider"  style="background-color: #f6fdef">
 <div class="section blog section-x tc-grey">
     <div class="container">
         @include('component.breadcrumb')

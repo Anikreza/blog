@@ -27,8 +27,7 @@ class PageRepository implements PageInterface
             'title' => $request->input('title'),
             'slug' => $this->slugify($request->input('title')),
             'excerpt' => $request->input('excerpt'),
-            'featured' => filter_var($request->input('featured'), FILTER_VALIDATE_BOOLEAN),
-            'description' => saveTextEditorImage($request->input('description')),
+            'description' => $request->input('description'),
             'published' => filter_var($request->input('published'), FILTER_VALIDATE_BOOLEAN),
             'meta_title' => $request->input('meta_title'),
         ]);
@@ -66,7 +65,7 @@ class PageRepository implements PageInterface
             'title' => $request->input('title'),
             'slug' => $this->slugify($request->input('title')),
             'excerpt' => $request->input('excerpt'),
-            'description' => saveTextEditorImage($request->input('description')),
+            'description' => $request->input('description'),
             'published' => filter_var($request->input('published'), FILTER_VALIDATE_BOOLEAN),
             'meta_title' => $request->input('meta_title'),
         ];
@@ -111,5 +110,6 @@ class PageRepository implements PageInterface
             })
             ->paginate($perPage);
     }
+
 
 }
